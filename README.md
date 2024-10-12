@@ -17,7 +17,7 @@ chmod +x manage
 After doing that, you are now ready to use the script.
 
 # Common `manage` commands
-**Start Server:** `./manage up`
-**Stop Server:** `./manage down`
-**Restart Server:** `./manage restart`
-**Help:** `./manage help`
++ **Start Server:** `./manage up`
++ **Stop Server:** `./manage down`
++ **Restart Server:** `./manage restart`
++ **Help:** `./manage help`
