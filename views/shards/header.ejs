@@ -1,0 +1,78 @@
+<div id="notification-banner" class="relative isolate flex items-center gap-x-6 overflow-hidden bg-gray-800/50 backdrop-blur-md px-6 py-2.5 rounded-lg shadow-lg">
+    <div class="absolute left-0 top-1/2 -z-10 -translate-y-1/2 transform-gpu blur-2xl">
+        <div class="aspect-[577/310] w-[36.0625rem] bg-gradient-to-r from-[#ff80b5] to-[#9089fc] opacity-30" style="clip-path: polygon(74.8% 41.9%, 97.2% 73.2%, 100% 34.9%, 92.5% 0.4%, 87.5% 0%, 75% 28.6%, 58.5% 54.6%, 50.1% 56.8%, 46.9% 44%, 48.3% 17.4%, 24.7% 53.9%, 0% 27.9%, 11.9% 74.2%, 24.9% 54.1%, 68.6% 100%, 74.8% 41.9%)"></div>
+    </div>
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <p class="text-sm leading-6 text-gray-100">
+            <strong class="font-semibold">old.aidxn.fun</strong>
+            <svg viewBox="0 0 2 2" class="mx-2 inline h-0.5 w-0.5 fill-current" aria-hidden="true">
+                <circle cx="1" cy="1" r="1" />
+            </svg>
+            Do you prefer a retro design? Check out old.aidxn.fun!
+        </p>
+        <a href="https://old.aidxn.fun" class="flex-none rounded-full bg-gray-900 px-3.5 py-1 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900">Go retro <span aria-hidden="true">&rarr;</span></a>
+    </div>
+    <div class="flex flex-1 justify-end">
+        <button type="button" id="dismiss-btn" class="-m-3 p-3 focus-visible:outline-offset-[-4px]">
+            <span class="sr-only">Dismiss</span>
+            <svg class="h-5 w-5 text-gray-100" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+            </svg>
+        </button>
+    </div>
+</div>
+<header>
+    <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+        <div class="flex lg:flex-1">
+            <a href="/" class="-m-1.5 p-1.5">
+                <span class="sr-only">aidxnFUN</span>
+                <img class="h-8 w-auto" src="/img/logo.png" alt="">
+            </a>
+        </div>
+        <div class="flex lg:hidden">
+            <button type="button" id="open-menu-btn" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+                <span class="sr-only">Open main menu</span>
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+        </div>
+        <div class="hidden lg:flex lg:gap-x-12">
+            <a href="/" class="text-sm font-semibold leading-6 text-slate-200">Home</a>
+            <a href="/about" class="text-sm font-semibold leading-6 text-slate-200">About</a>
+            <a href="/contact" class="text-sm font-semibold leading-6 text-slate-200">Contact</a>
+            <a href="/verify" class="text-sm font-semibold leading-6 text-slate-200">Verify Message</a>
+            <a href="/status" class="text-sm font-semibold leading-6 text-slate-200">Status</a>
+            <a href="/projects" class="text-sm font-semibold leading-6 text-slate-200">Projects</a>
+        </div>
+    </nav>
+    <div class="lg:hidden" role="dialog" aria-modal="true" id="mobile-menu" style="display: none;">
+        <div class="fixed inset-0 z-10 bg-gray-800 bg-opacity-80"></div>
+        <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+            <div class="flex items-center justify-between">
+                <a href="/" class="-m-1.5 p-1.5">
+                    <span class="sr-only">aidxnFUN</span>
+                    <img class="h-8 w-auto" src="/img/logo.png" alt="">
+                </a>
+                <button type="button" id="close-menu-btn" class="-m-2.5 rounded-md p-2.5 text-slate-200">
+                    <span class="sr-only">Close menu</span>
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="mt-6 flow-root">
+                <div class="-my-6 divide-y divide-gray-500/10">
+                    <div class="space-y-2 py-6">
+                        <a href="/" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">Home</a>
+                        <a href="/about" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">About</a>
+                        <a href="/contact" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">Contact</a>
+                        <a href="/verify" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">Verify Message</a>
+                        <a href="/status" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">Status</a>
+                        <a href="/projects" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">Projects</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

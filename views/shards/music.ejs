@@ -1,0 +1,21 @@
+<div>
+    <h1 id="albumlabel" class="text-3xl text-white mb-3"></h1>
+    <div id="music-widget" class="relative w-72 p-4 rounded-lg border border-gray-300/50
+      backdrop-blur-md bg-white/10 shadow-lg transition-all">
+        <div id="loader" class="flex justify-center items-center h-24">
+            <div class="w-6 h-6 border-4 border-t-transparent border-gray-300 rounded-full animate-spin"></div>
+        </div>
+
+        <div id="music-content" class="hidden space-y-2">
+            <div class="flex items-center space-x-3">
+                <img id="album-art" src="" alt="Album Art"
+                     class="w-16 h-16 rounded-md object-cover border border-gray-400/20" />
+                <div class="flex flex-col overflow-hidden">
+                    <h2 id="song" class="text-lg font-semibold text-white truncate">Loading</h2>
+                    <p id="artist" class="text-sm text-gray-300 truncate">Loading</p>
+                    <p id="album" class="text-xs text-gray-400 italic truncate">Loading</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
