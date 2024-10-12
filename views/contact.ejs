@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>aidxn.fun | Contact</title>
+    <link href="/css/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gradient-to-br from-slate-900 to-black text-white">
+<%- include('shards/header.ejs', { req: req }) %>
+
+<header class="flex flex-col items-center justify-center h-[40vh] p-6">
+    <h1 class="text-5xl font-bold mb-2 text-center">Contact</h1>
+    <p class="text-lg text-gray-300 max-w-xl text-center mt-3">Looking to contact me? You found it!</p>
+</header>
+
+<div class="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-800 backdrop-blur-md shadow-xl rounded-2xl p-8 mx-4">
+    <h3 class="text-2xl font-bold mb-4 text-white">Contact Details</h3>
+    <p class="text-slate-300 mb-4">This one can be a hard one for most people, as I'm not a fan of modern social media, albeit I give in here and there.</p>
+    <p class="text-slate-300 mb-4">Now, the part you came for!</p>
+    <p class="text-slate-300 mb-4">If you're looking for my email, simply replace the brackets with the character it's referencing, like so: test[at]test[dot]com becomes test@test.com</p>
+    <p class="text-slate-300 mb-6">This is in order to prevent bots from contacting me.</p>
+
+    <ul class="space-y-4">
+        <li class="flex items-center">
+            <i class="fas fa-envelope text-pink-500 mr-2"></i>
+            <b>Email:</b> <span class="text-slate-300 ml-1">imlou[at]disroot[dot]org (PGP encryption preferred)</span>
+        </li>
+        <li class="flex items-center">
+            <i class="fas fa-comments text-green-400 mr-2"></i>
+            <b>Signal:</b> <span class="text-slate-300 ml-1">[at]iusearchbtw.17</span>
+        </li>
+        <li class="flex items-center">
+            <i class="fab fa-telegram-plane text-blue-400 mr-2"></i>
+            <b>Telegram:</b> <span class="text-slate-300 ml-1">[at]iusearchbtw42</span>
+        </li>
+        <li class="flex items-center">
+            <i class="fas fa-phone-alt text-yellow-400 mr-2"></i>
+            <b>Phone:</b> <span class="text-slate-300 ml-1">Not given out to untrusted people. Contact elsewhere<i class="ml-1">first!</i></span>
+        </li>
+    </ul>
+</div>
+
+<script src="js/main.js"></script>
+<%- include('shards/footer.ejs') %>
