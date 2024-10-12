@@ -1,0 +1,270 @@
+#!/bin/bash
+
+PORT=3000
+SCREEN_NAME="aidxnfun"
+SETUP_FILE=".setup_complete"
+
+function install_tools() {
+    if ! command -v screen &> /dev/null; then
+        echo -e "\033[1;31mScreen is not installed. Installing now...\033[0m"
+        echo -e "\033[1;33mYou may need to enter your sudo password.\033[0m"
+        echo
+        sudo apt-get update
+        sudo apt-get install -y screen
+        echo
+        echo -e "\033[1;32mScreen installed successfully.\033[0m"
+        echo
+        touch $SETUP_FILE
+    else
+        echo -e "\033[1;32mScreen is already installed.\033[0m"
+        touch $SETUP_FILE
+    fi
+}
+
+function show_help() {
+    echo -e "\033[1;34mUsage:\033[0m ./manage [command]"
+    echo ""
+    echo -e "\033[1;33mCommands:\033[0m"
+    echo -e "  \033[1;36m-h, --help, help\033[0m    Shows this help message."
+    echo -e "  \033[1;36mup\033[0m                  Builds the project and starts the server."
+    echo -e "  \033[1;36mdown\033[0m                Stops the server and deletes public directory."
+    echo -e "  \033[1;36mrestart\033[0m             Restarts the server and recreates public directory."
+    echo -e "  \033[1;36m-s, --status\033[0m        Checks if server is running."
+    echo ""
+}
+
+function check_dirs() {
+    action=$1
+    created_count=0
+    deleted_count=0
+
+    if [ "$action" == "create" ]; then
+        for dir in "./public" "./public/js" "./public/css" "./src" "./src/css" "./src/img" "./src/js"; do
+            if [ ! -d "$dir" ]; then
+                echo -e "\033[1;34mDeleting the $dir directories...\033[0m"
+                echo -e "\033[1;34m$dir does not exist, creating...\033[0m"
+                mkdir -p "$dir"
+                created_count=$((created_count + 1))
+            fi
+        done
+        if [ "$created_count" -gt 0 ]; then
+            echo -e "\033[0;32mDone.\033[0m"
+        fi
+
+    elif [ "$action" == "delete" ]; then
+        if [ -d "./public" ]; then
+            echo -e "\033[1;34mCreating $dir...\033[0m"
+            rm -rf "./public"
+            deleted_count=$((deleted_count + 1))
+        fi
+        if [ "$deleted_count" -gt 0 ]; then
+            echo -e "\033[0;32mDone.\033[0m"
+        fi
+    else
+        echo -e "\033[0;31mInvalid action: $action. Use 'create' or 'delete'.\033[0m"
+    fi
+}
+
+function restart_server() {
+    clear
+    check_setup
+
+    if [ -f './public' ]; then
+        echo -e "\033[1;34mDeleting the public directories...\033[0m"
+        check_dirs "delete"
+    fi
+
+    if [ -f './src/css/main.css' ]; then
+        echo -e "\033[1;34mDeleting the Tailwind CSS...\033[0m"
+        rm ./src/css/main.css
+        echo -e "\033[0;32mDone.\033[0m"
+    fi
+
+    PIDS=$(lsof -t -i:$PORT)  # Capture all PIDs on this port
+
+    if [ -n "$PIDS" ]; then
+        echo -e "\033[1;34mStopping server...\033[0m"
+        for PID in $PIDS; do
+            kill "$PID" || echo -e "\033[1;31mFailed to kill PID: $PID\033[0m"
+        done
+        screen -S "$SCREEN_NAME" -X quit 2>/dev/null || echo -e "\033[1;33mNo screen session to quit.\033[0m"
+        echo -e "\033[0;32mDone.\033[0m"
+    else
+        echo -e "\033[1;33mNo process found on port $PORT.\033[0m"
+    fi
+
+    if [ -f './public' ]; then
+        echo -e "\033[1;34mCreating the public directories...\033[0m"
+        check_dirs "create"
+    fi
+
+    echo -e "\033[1;34mBuilding the project...\033[0m"
+    if ! npm run build > /dev/null; then
+        echo -e "\033[0;31mBuild failed. Please check for errors above.\033[0m"
+        exit 1
+    fi
+
+    if [ -f './public/css/base.css' ]; then
+        echo -e "\033[1;34mCleaning up base Tailwind CSS file...\033[0m"
+        rm ./public/css/base.css
+        echo -e "\033[0;32mDone.\033[0m"
+    fi
+
+    echo -e "\033[1;34mStarting the server in a screen session...\033[0m"
+    screen -dmS $SCREEN_NAME npm start
+    echo -e "\033[1;32mDone. Server is up and running on port $PORT!\033[0m"
+}
+
+function start_server() {
+    clear
+    check_setup
+
+    PID=$(lsof -t -i:$PORT)
+
+    if [ -n "$PID" ]; then
+        echo -e "\033[1;33mA server process is already running on port $PORT. Skipping server start.\033[0m"
+        return
+    fi
+
+    if screen -list | grep -q "$SCREEN_NAME"; then
+        echo -e "\033[1;33mA screen session named '$SCREEN_NAME' is already running. Skipping server start.\033[0m"
+        return
+    fi
+
+    if [ -f './public' ]; then
+        echo -e "\033[1;34mCreating the public directories...\033[0m"
+        check_dirs "create"
+    fi
+
+    if [ -f './src/css/main.css' ]; then
+        echo -e "\033[1;34mDeleting the Tailwind CSS...\033[0m"
+        rm ./src/css/main.css
+        echo -e "\033[0;32mDone.\033[0m"
+    fi
+
+    echo -e "\033[1;34mBuilding the project...\033[0m"
+    if ! npm run build > /dev/null; then
+        echo -e "\033[0;31mBuild failed. Please check for errors above.\033[0m"
+        exit 1
+    fi
+
+    if [ -f './public/css/base.css' ]; then
+        echo -e "\033[1;34mCleaning up base Tailwind CSS file...\033[0m"
+        rm ./public/css/base.css
+        echo -e "\033[0;32mDone.\033[0m"
+    fi
+
+    echo -e "\033[1;34mStarting the server in a screen session...\033[0m"
+    screen -dmS "$SCREEN_NAME" npm start
+    echo -e "\033[1;32mDone. Server is up and running on port $PORT!\033[0m"
+}
+
+function stop_server() {
+    clear
+    check_setup
+    PID=$(lsof -t -i:$PORT)
+
+    if [ -f './public' ]; then
+        echo -e "\033[1;34mDeleting the public directories...\033[0m"
+        check_dirs "delete"
+    fi
+
+    if [ -f './src/css/main.css' ]; then
+        echo -e "\033[1;34mDeleting the Tailwind CSS...\033[0m"
+        rm ./src/css/main.css
+        echo -e "\033[0;32mDone.\033[0m"
+    fi
+
+    PIDS=$(lsof -t -i:$PORT)
+
+    if [ -n "$PIDS" ]; then
+        echo -e "\033[1;34mStopping server...\033[0m"
+        for PID in $PIDS; do
+            kill "$PID" || echo -e "\033[1;31mFailed to kill PID: $PID\033[0m"
+        done
+        screen -S "$SCREEN_NAME" -X quit 2>/dev/null || echo -e "\033[1;33mNo screen session to quit.\033[0m"
+        echo -e "\033[0;32mDone.\033[0m"
+    else
+        echo -e "\033[1;33mNo process found on port $PORT.\033[0m"
+    fi
+}
+
+function check_status() {
+    check_setup
+    PID=$(lsof -t -i:$PORT)
+
+    if [ -n "$PID" ]; then
+        echo -e "\033[0;32mServer is running with PID: $PID\033[0m"
+    else
+        echo -e "\033[0;31mServer is not running.\033[0m"
+    fi
+}
+
+function setup_screen() {
+    clear
+    echo -e "\033[1;34mWelcome to the aidxnFUNbeta 'manage' script setup!\033[0m"
+    echo
+    echo -e "\033[1;32mA custom script built by ihatenodejs\033[0m"
+    echo -e "\033[1;33mand presented by forkers like you...\033[0m"
+    echo
+    read -n 1 -s -r -p "Press any key to continue..."
+    clear
+
+    echo -e "\n\nThis script requires Node.js and NPM to be installed on your system."
+    echo "Please ensure you have them installed before proceeding."
+    echo
+    read -n 1 -s -r -p "Press any key to continue..."
+    clear
+
+    echo -e "\n\nThis script requires Node.js and NPM to be installed on your system."
+    echo "Please ensure you have them installed before proceeding."
+    echo
+    echo -e "\n\nTo install Node.js and NPM, you can visit: https://nodejs.org/"
+    echo "Follow the instructions for your specific operating system."
+    echo
+    read -n 1 -s -r -p "Press any key to continue..."
+    clear
+
+    echo -e "\n\nThe script will now check if 'screen' is installed."
+    echo "You may need to enter your sudo password."
+    echo
+    install_tools
+    echo
+    touch $SETUP_FILE
+    read -n 1 -s -r -p "Press any key to finish..."
+    clear
+    echo "Have a nice day!"
+    echo
+}
+
+function check_setup() {
+    if [ ! -f $SETUP_FILE ]; then
+        echo "Setup has not been completed. Please run './manage setup' first."
+        exit 1
+    fi
+}
+
+case $1 in
+    help|-h|--help)
+        show_help
+        ;;
+    up)
+        start_server
+        ;;
+    down)
+        stop_server
+        ;;
+    restart)
+        restart_server
+        ;;
+    -s|--status)
+        check_status
+        ;;
+    setup)
+        setup_screen
+        ;;
+    *)
+        echo "Unknown command."
+        show_help
+        ;;
+esac
