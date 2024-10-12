@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>aidxn.fun | verify</title>
+    <link href="/css/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gradient-to-br from-slate-900 to-black text-white">
+<%- include('shards/header.ejs', { req: req }) %>
+
+<header class="flex flex-col items-center justify-center h-[40vh] p-6">
+    <h1 class="text-5xl font-bold mb-2 text-center">Verify</h1>
+    <p class="text-lg text-gray-300 max-w-xl text-center mt-3">Let's check if that message really came from me!</p>
+</header>
+
+<div class="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-800 backdrop-blur-md shadow-xl rounded-2xl p-8 mx-4">
+    <h3 class="text-2xl font-bold mb-4 text-white">Introduction</h3>
+    <p class="text-slate-300 mb-4">Did I send you a PGP signed message? Let's check it's actually from me! The form below will verify the message was signed by my key.</p>
+    <p class="text-slate-300 mb-4"><span class="font-bold">Remember</span>, if you have confirmed my key in person, you should always trust that key over this page.</p>
+    <p class="text-slate-300 mb-4">The key this is being checked against is stored on my server, which can be prone to being hacked. Thus, this is better than nothing, but not the #1 option for verifying a message.</p>
+    <h3 class="text-2xl font-bold mb-4 text-white">Check Message</h3>
+    <p class="text-slate-300 font-bold">THIS FORM IS NOT CURRENTLY AVAILABLE</p>
+</div>
+
+<script src="js/main.js"></script>
+<%- include('shards/footer.ejs') %>
