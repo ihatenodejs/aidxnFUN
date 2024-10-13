@@ -1,0 +1,9 @@
+services:
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: iloveaidxnfun123
+      MYSQL_DATABASE: aidxnfun
+      MYSQL_USER: aidxnfun
+      MYSQL_PASSWORD: iloveaidxnfun
+    restart: unless-stopped
