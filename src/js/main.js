@@ -1,3 +1,7 @@
+const openMenuBtn = document.getElementById('open-menu-btn');
+const closeMenuBtn = document.getElementById('close-menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+
 document.addEventListener('DOMContentLoaded', () => {
     const notificationBanner = document.getElementById('notification-banner');
     const dismissButton = document.getElementById('dismiss-btn');
@@ -11,10 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('notificationDismissed', 'true');
     });
 });
-
-const openMenuBtn = document.getElementById('open-menu-btn');
-const closeMenuBtn = document.getElementById('close-menu-btn');
-const mobileMenu = document.getElementById('mobile-menu');
 
 openMenuBtn.addEventListener('click', () => {
     mobileMenu.style.display = 'block';
