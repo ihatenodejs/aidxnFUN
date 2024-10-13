@@ -6,6 +6,7 @@ SETUP_FILE=".setup_complete"
 
 function install_tools() {
     if ! command -v screen &> /dev/null; then
+        clear
         echo -e "\033[1;31mScreen is not installed. Installing now...\033[0m"
         echo -e "\033[1;33mYou may need to enter your sudo password.\033[0m"
         echo
@@ -16,6 +17,7 @@ function install_tools() {
         echo
         touch $SETUP_FILE
     else
+        clear
         echo -e "\033[1;32mScreen is already installed.\033[0m"
         touch $SETUP_FILE
     fi
@@ -200,7 +202,7 @@ function check_status() {
     fi
 }
 
-function setup_screen() {
+function setup() {
     clear
     echo -e "\033[1;34mWelcome to the aidxnFUNbeta 'manage' script setup!\033[0m"
     echo
@@ -239,9 +241,10 @@ function setup_screen() {
         export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         nvm install 20.18.0
+        sudo apt install npm
 
         echo
-        echo "NodeJS should have been installed."
+        echo "NodeJS and NPM should have been installed."
 
         read -n 1 -s -r -p "Press any key to continue..."
         clear
@@ -294,7 +297,7 @@ case $1 in
         check_status
         ;;
     setup)
-        setup_screen
+        setup
         ;;
     *)
         echo "Unknown command."
