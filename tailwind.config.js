@@ -2,7 +2,11 @@
 module.exports = {
   content: ["./views/**/*.{ejs,js}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'afacad-flux': ['"Afacad Flux"', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
 }
