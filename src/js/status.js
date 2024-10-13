@@ -27,12 +27,12 @@ async function testPing() {
             if (url === 'https://kantor.aidxn.fun/ping') {
                 const status1 = document.getElementById("status1");
                 status1.textContent = `[ONLINE - ${time} ms]`
-                status1.class = 'text-green-500 font-bold';
+                status1.className = 'text-green-500 font-bold';
             }
             if (url === 'https://api.aidxn.fun/ping') {
                 const api = document.getElementById("api");
                 api.textContent = `[ONLINE - ${time} ms]`
-                api.class = 'text-green-500 font-bold';
+                api.className = 'text-green-500 font-bold';
             }
             return { url, time };
         })
