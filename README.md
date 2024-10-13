@@ -1,5 +1,4 @@
-# aidxnFUNbeta
-The beta version of my website, before it's pushed into production.
+# aidxnFUN
 Built with Tailwind CSS, EJS, ExpressJS, and NodeJS for a backend for it all.
 This is a more modern version of design.
 
