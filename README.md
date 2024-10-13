@@ -37,6 +37,8 @@ The views contain both regular page shards (full HTML documents) and generic sha
 
 Thus far, shards are included for a music widget, the header, and the footer of the pages.
 
+Music (as featured on the home page) is fetched from an API (hosted on https://biancarosa.com.br), which I am in the process of setting up for myself. It works with a LastFM account (I linked this to my Spotify) and can track your live listening with amazing accuracy. The repo can be found at [biancarosa/lastfm-last-played](https://github.com/biancarosa/lastfm-last-played).
+
 # Using the `manage` script
 You may have noticed you have a `manage` file after cloning.
 `manage` is a command-line tool to manage the server. It can automatically start, stop, and restart your instance.
