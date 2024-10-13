@@ -9,6 +9,8 @@ Have a weird obsession? Want a pre-built site you can use for free? Host aidxnFU
 As the code is avaliable under the CC Zero license, which means you should feel free and encouraged to change content, design, whatever!
 During this process, `screen`, `node` (20.08.0,
 
+Please note the /status endpoint will be broken with the original servers as CORS is blocked on sites not requesting from my personal domain.
+
 ## Debian/Ubuntu/Other Debian-based systems
 1. Clone the repo
    ```bash
