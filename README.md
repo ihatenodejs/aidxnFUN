@@ -54,4 +54,5 @@ After doing that, you are now ready to use the script.
 + **Start Server:** `./manage up`
 + **Stop Server:** `./manage down`
 + **Restart Server:** `./manage restart`
++ + **Server Status:** `./manage --status`
 + **Help:** `./manage help`
