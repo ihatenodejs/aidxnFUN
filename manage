@@ -216,22 +216,55 @@ function setup_screen() {
     read -n 1 -s -r -p "Press any key to continue..."
     clear
 
-    echo -e "\n\nThis script requires Node.js and NPM to be installed on your system."
-    echo "Please ensure you have them installed before proceeding."
-    echo
-    echo -e "\n\nTo install Node.js and NPM, you can visit: https://nodejs.org/"
-    echo "Follow the instructions for your specific operating system."
-    echo
-    read -n 1 -s -r -p "Press any key to continue..."
-    clear
+    if command -v node >/dev/null 2>&1; then
+        echo -e "\n✅ Node.js is already installed. Version: $(node -v)"
+    else
+        echo -e "\n❌ Node.js is not installed."
+    fi
 
-    echo -e "\n\nThe script will now check if 'screen' is installed."
+    if command -v npm >/dev/null 2>&1; then
+        echo -e "✅ NPM is already installed. Version: $(npm -v)"
+    else
+        echo -e "❌ NPM is not installed."
+    fi
+
+    if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
+        echo -e "\nThis script requires Node.js and NPM to be installed on your system."
+        echo "We will now proceed to install it on your system using NVM."
+
+        echo -e "\nWe will be installing Node.js 20.18.0\n"
+        read -n 1 -s -r -p "Press any key to install NVM and Node.js..."
+
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+        export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm install 20.18.0
+
+        echo
+        echo "NodeJS should have been installed."
+
+        read -n 1 -s -r -p "Press any key to continue..."
+        clear
+
+        echo "We will now install everything required on the NodeJS side."
+        echo "Press any to confirm you're okay with this."
+        echo
+        read -n 1 -s -r -p "Press any key to continue..."
+        npm install
+        echo
+        echo "Hopefully everything installed right!"
+    else
+        echo -e "\nAll required dependencies are installed. No further action needed."
+    fi
+
+    echo -e "\n\nmanage will now check if 'screen' is installed."
     echo "You may need to enter your sudo password."
     echo
     install_tools
     echo
     touch $SETUP_FILE
-    read -n 1 -s -r -p "Press any key to finish..."
+    read -n 1 -s -r -p "Press any key to continue..."
+
     clear
     echo "Have a nice day!"
     echo
