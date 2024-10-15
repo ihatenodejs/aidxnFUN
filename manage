@@ -117,6 +117,8 @@ function check_dirs() {
         done
         if [ "$created_count" -gt 0 ]; then
             echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        else
+            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
         fi
 
     elif [ "$action" == "delete" ]; then
@@ -126,6 +128,8 @@ function check_dirs() {
             deleted_count=$((deleted_count + 1))
         fi
         if [ "$deleted_count" -gt 0 ]; then
+            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        else
             echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
         fi
     else
