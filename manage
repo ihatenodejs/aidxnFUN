@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -f .env ]; then
+    export "$(grep -v '^#' .env | xargs)"
+fi
+
 PORT=3000
 SETUP_FILE=".setup_complete"
 COLOR_RESET="\033[0m"
@@ -8,6 +12,10 @@ COLOR_RED="\033[1;31m"
 COLOR_YELLOW="\033[1;33m"
 COLOR_BLUE="\033[1;34m"
 COLOR_CYAN="\033[1;36m"
+
+check_db() {
+    nc -z "$DB_HOST" "$DB_PORT"
+}
 
 function install_tools() {
     if ! command -v node &> /dev/null; then
@@ -23,6 +31,18 @@ function install_tools() {
         echo
     else
         echo -e "${COLOR_GREEN}NodeJS is installed. Version: $(node -v)${COLOR_RESET}"
+    fi
+
+    if ! command -h nc &> /dev/null; then
+        echo -e "${COLOR_RED}Netcat is not installed. Installing now...${COLOR_RESET}"
+        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
+        echo
+        sudo apt-get install netcat-traditional
+        echo
+        echo -e "${COLOR_GREEN}Netcat installed successfully.${COLOR_RESET}"
+        echo
+    else
+        echo -e "${COLOR_GREEN}Netcat is installed. Version: $(nc -h | grep -oP '\[v[0-9.]+\-[0-9]+\]' | tr -d '[]')${COLOR_RESET}"
     fi
 
     if ! command -v npm &> /dev/null; then
@@ -177,6 +197,13 @@ function restart_server() {
         echo -e "${COLOR_BLUE}Starting database...${COLOR_RESET}"
         echo "This may require your sudo password"
         sudo docker compose up -d
+
+        echo "Waiting for the db at $DB_HOST:$DB_PORT to be available..."
+        while ! check_db; do
+            sleep 2
+            echo "Still waiting for the database..."
+        done
+
         echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
     fi
 
@@ -214,6 +241,13 @@ function start_server() {
         echo -e "${COLOR_BLUE}Starting database...${COLOR_RESET}"
         echo "This may require your sudo password"
         sudo docker compose up -d
+
+        echo "Waiting for the db at $DB_HOST:$DB_PORT to be available..."
+        while ! check_db; do
+            sleep 2
+            echo "Still waiting for the database..."
+        done
+
         echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
     fi
 
