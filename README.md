@@ -1,4 +1,7 @@
 # aidxnFUN
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN?ref=badge_shield&issueType=license)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN?ref=badge_shield&issueType=security)
+
 Built with Tailwind CSS, EJS, ExpressJS, and NodeJS for a backend for it all.
 This is a more modern version of design.
 This project is released under the CC0-1.0 license. The code and content are in the public domain.
@@ -119,3 +122,7 @@ Usage: `./manage [command] [options]`
 
 ## `manage` options
 + `--db-alive` - Do not restart Docker services (database).
+
+# To-Do
+- [ ] Add database support
+- [ ] Add view counter
