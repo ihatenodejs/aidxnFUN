@@ -1,7 +1,6 @@
 #!/bin/bash
 
 PORT=3000
-SCREEN_NAME="aidxnfun"
 SETUP_FILE=".setup_complete"
 COLOR_RESET="\033[0m"
 COLOR_GREEN="\033[1;32m"
@@ -11,19 +10,6 @@ COLOR_BLUE="\033[1;34m"
 COLOR_CYAN="\033[1;36m"
 
 function install_tools() {
-    if ! command -v screen &> /dev/null; then
-        echo -e "${COLOR_RED}Screen is not installed. Installing now...${COLOR_RESET}"
-        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
-        echo
-        sudo apt-get update
-        sudo apt-get install -y screen
-        echo
-        echo -e "${COLOR_GREEN}Screen installed successfully.${COLOR_RESET}"
-        echo
-    else
-        echo -e "${COLOR_GREEN}Screen is installed. Version: $(screen -v)${COLOR_RESET}"
-    fi
-
     if ! command -v node &> /dev/null; then
         echo -e "${COLOR_RED}NodeJS is not installed. Installing now...${COLOR_RESET}"
         echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
@@ -305,7 +291,6 @@ function stop_server() {
         for PID in $PIDS; do
             kill "$PID" || echo -e "${COLOR_RED}Failed to kill PID: $PID${COLOR_RESET}"
         done
-        screen -S "$SCREEN_NAME" -X quit 2>/dev/null || echo -e "${COLOR_YELLOW}No screen session to quit.${COLOR_RESET}"
         echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
     else
         echo -e "${COLOR_YELLOW}No process found on port $PORT.${COLOR_RESET}"
