@@ -3,191 +3,304 @@
 PORT=3000
 SCREEN_NAME="aidxnfun"
 SETUP_FILE=".setup_complete"
+COLOR_RESET="\033[0m"
+COLOR_GREEN="\033[1;32m"
+COLOR_RED="\033[1;31m"
+COLOR_YELLOW="\033[1;33m"
+COLOR_BLUE="\033[1;34m"
+COLOR_CYAN="\033[1;36m"
 
 function install_tools() {
     if ! command -v screen &> /dev/null; then
-        clear
-        echo -e "\033[1;31mScreen is not installed. Installing now...\033[0m"
-        echo -e "\033[1;33mYou may need to enter your sudo password.\033[0m"
+        echo -e "${COLOR_RED}Screen is not installed. Installing now...${COLOR_RESET}"
+        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
         echo
         sudo apt-get update
         sudo apt-get install -y screen
         echo
-        echo -e "\033[1;32mScreen installed successfully.\033[0m"
+        echo -e "${COLOR_GREEN}Screen installed successfully.${COLOR_RESET}"
+        echo
+    else
+        echo -e "${COLOR_GREEN}Screen is installed. Version: $(screen -v)${COLOR_RESET}"
+    fi
+
+    if ! command -v node &> /dev/null; then
+        echo -e "${COLOR_RED}NodeJS is not installed. Installing now...${COLOR_RESET}"
+        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
+        echo
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+        export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm install 20.18.0
+        echo
+        echo -e "${COLOR_GREEN}NodeJS installed successfully.${COLOR_RESET}"
+        echo
+    else
+        echo -e "${COLOR_GREEN}NodeJS is installed. Version: $(node -v)${COLOR_RESET}"
+    fi
+
+    if ! command -v npm &> /dev/null; then
+        echo -e "${COLOR_RED}NPM is not installed. Installing now...${COLOR_RESET}"
+        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
+        echo
+        sudo apt-get update
+        sudo apt-get install npm
+        echo -e "${COLOR_BLUE}Copying env file...${COLOR_RESET}"
+        if [ ! -d "./.env" ]; then
+            if [ ! -d "./.env.example" ]; then
+                echo "Couldn't find example env file"
+            else
+                sudo cp .env.example .env
+            fi
+        else
+            echo -e "${COLOR_GREEN}env file already exists, skipping.${COLOR_RESET}"
+        fi
+        echo -e "${COLOR_BLUE}Installing NPM deps...${COLOR_RESET}"
+        npm install > node.log 2>&1
+        echo
+        echo -e "${COLOR_GREEN}NPM installed successfully.${COLOR_RESET}"
         echo
         touch $SETUP_FILE
     else
-        clear
-        echo -e "\033[1;32mScreen is already installed.\033[0m"
+        echo -e "${COLOR_GREEN}NPM is installed. Version: $(npm -v)${COLOR_RESET}"
         touch $SETUP_FILE
     fi
 }
 
+function install_docker() {
+    echo -e "${COLOR_BLUE}Docker is not installed. Installing now...${COLOR_RESET}"
+    echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
+    echo
+    curl -fsSL test.docker.com -o get-docker.sh && sh get-docker.sh
+    echo
+    echo -e "${COLOR_GREEN}Docker installed successfully.${COLOR_RESET}"
+    echo -e "${COLOR_BLUE}Adding user to the Docker group...${COLOR_RESET}"
+    if [ ! -d "./docker-compose.yml" ]; then
+        if [ ! -d "./docker-compose.yml.example" ]; then
+            echo "Couldn't find example Docker Compose file"
+        else
+            sudo cp docker-compose.yml.example docker-compose.yml
+        fi
+    else
+        echo -e "${COLOR_GREEN}Docker Compose file already exists, skipping.${COLOR_RESET}"
+    fi
+    sudo usermod -aG docker $USER
+    echo -e "${COLOR_GREEN}User added to Docker group. Please log out and back in for the changes to take effect.${COLOR_RESET}"
+}
+
+
 function show_help() {
-    echo -e "\033[1;34mUsage:\033[0m ./manage [command]"
-    echo ""
-    echo -e "\033[1;33mCommands:\033[0m"
-    echo -e "  \033[1;36m-h, --help, help\033[0m    Shows this help message."
-    echo -e "  \033[1;36mup\033[0m                  Builds the project and starts the server."
-    echo -e "  \033[1;36mdown\033[0m                Stops the server and deletes public directory."
-    echo -e "  \033[1;36mrestart\033[0m             Restarts the server and recreates public directory."
-    echo -e "  \033[1;36m-s, --status\033[0m        Checks if server is running."
+    echo -e "${COLOR_BLUE}Usage:${COLOR_RESET} ./manage [command] [options]"
+    echo
+    echo -e "${COLOR_YELLOW}Commands:${COLOR_RESET}"
+    echo -e "  ${COLOR_CYAN}help, -h, --help${COLOR_RESET}      Shows this help message."
+    echo -e "  ${COLOR_CYAN}up${COLOR_RESET}                    Builds the project and starts the server."
+    echo -e "  ${COLOR_CYAN}down${COLOR_RESET}                  Stops the server."
+    echo -e "  ${COLOR_CYAN}restart${COLOR_RESET}               Restarts the server."
+    echo -e "  ${COLOR_CYAN}status, -s, --status${COLOR_RESET}  Checks if the server is running."
+    echo
+    echo -e "${COLOR_YELLOW}Options:${COLOR_RESET}"
+    echo -e "  ${COLOR_CYAN}--db-alive${COLOR_RESET}            Do not restart Docker services."
     echo ""
 }
 
+function check_docker() {
+    if command -v docker &> /dev/null; then
+        echo -e "${COLOR_GREEN}Docker is installed. Version: $(docker --version)${COLOR_RESET}"
+    else
+        echo -e "${COLOR_RED}Docker is not installed.${COLOR_RESET}"
+    fi
+}
+
 function check_dirs() {
-    action=$1
-    created_count=0
-    deleted_count=0
+    local action=$1
+    local created_count=0
+    local deleted_count=0
 
     if [ "$action" == "create" ]; then
         for dir in "./public" "./public/js" "./public/css" "./src" "./src/css" "./src/img" "./src/js"; do
             if [ ! -d "$dir" ]; then
-                echo -e "\033[1;34mDeleting the $dir directories...\033[0m"
-                echo -e "\033[1;34m$dir does not exist, creating...\033[0m"
+                echo -e "${COLOR_BLUE}Creating $dir...${COLOR_RESET}"
                 mkdir -p "$dir"
                 created_count=$((created_count + 1))
             fi
         done
         if [ "$created_count" -gt 0 ]; then
-            echo -e "\033[0;32mDone.\033[0m"
+            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
         fi
 
     elif [ "$action" == "delete" ]; then
         if [ -d "./public" ]; then
-            echo -e "\033[1;34mCreating $dir...\033[0m"
+            echo -e "${COLOR_BLUE}Deleting public directory...${COLOR_RESET}"
             rm -rf "./public"
             deleted_count=$((deleted_count + 1))
         fi
         if [ "$deleted_count" -gt 0 ]; then
-            echo -e "\033[0;32mDone.\033[0m"
+            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
         fi
     else
-        echo -e "\033[0;31mInvalid action: $action. Use 'create' or 'delete'.\033[0m"
+        echo -e "${COLOR_RED}Invalid action: $action. Use 'create' or 'delete'.${COLOR_RESET}"
     fi
 }
 
 function restart_server() {
-    clear
     check_setup
 
-    if [ -f './public' ]; then
-        echo -e "\033[1;34mDeleting the public directories...\033[0m"
-        check_dirs "delete"
-    fi
-
-    if [ -f './src/css/main.css' ]; then
-        echo -e "\033[1;34mDeleting the Tailwind CSS...\033[0m"
-        rm ./src/css/main.css
-        echo -e "\033[0;32mDone.\033[0m"
-    fi
-
-    PIDS=$(lsof -t -i:$PORT)  # Capture all PIDs on this port
-
-    if [ -n "$PIDS" ]; then
-        echo -e "\033[1;34mStopping server...\033[0m"
-        for PID in $PIDS; do
-            kill "$PID" || echo -e "\033[1;31mFailed to kill PID: $PID\033[0m"
-        done
-        screen -S "$SCREEN_NAME" -X quit 2>/dev/null || echo -e "\033[1;33mNo screen session to quit.\033[0m"
-        echo -e "\033[0;32mDone.\033[0m"
+    if [ "$DB_ALIVE" == "true" ]; then
+        echo -e "${COLOR_YELLOW}Database services will not be restarted. Skipping Docker operations.${COLOR_RESET}"
     else
-        echo -e "\033[1;33mNo process found on port $PORT.\033[0m"
-    fi
+        if [ -d './public' ]; then
+            echo -e "${COLOR_BLUE}Deleting public directories...${COLOR_RESET}"
+            check_dirs "delete"
+        fi
 
-    if [ -f './public' ]; then
-        echo -e "\033[1;34mCreating the public directories...\033[0m"
+        if [ -f './src/css/main.css' ]; then
+            echo -e "${COLOR_BLUE}Deleting old Tailwind CSS...${COLOR_RESET}"
+            rm ./src/css/main.css
+            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        fi
+
+        PIDS=$(lsof -t -i:$PORT)
+
+        if [ -n "$PIDS" ]; then
+            echo -e "${COLOR_BLUE}Stopping server...${COLOR_RESET}"
+            for PID in $PIDS; do
+                kill "$PID" || echo -e "${COLOR_RED}Failed to kill PID: $PID${COLOR_RESET}"
+            done
+            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        else
+            echo -e "${COLOR_YELLOW}No process found on port $PORT.${COLOR_RESET}"
+        fi
+
+        echo -e "${COLOR_BLUE}Stopping database...${COLOR_RESET}"
+        echo "This may require your sudo password"
+        sudo docker compose down
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+
+        echo -e "${COLOR_BLUE}Creating public directories...${COLOR_RESET}"
         check_dirs "create"
+
+        echo -e "${COLOR_BLUE}Starting database...${COLOR_RESET}"
+        echo "This may require your sudo password"
+        sudo docker compose up -d
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
     fi
 
-    echo -e "\033[1;34mBuilding the project...\033[0m"
-    if ! npm run build > /dev/null; then
-        echo -e "\033[0;31mBuild failed. Please check for errors above.\033[0m"
+    echo -e "${COLOR_BLUE}Building project...${COLOR_RESET}"
+    if ! npm run build > node.log 2>&1; then
+        echo -e "${COLOR_RED}Build failed. Please check for errors above.${COLOR_RESET}"
         exit 1
     fi
 
     if [ -f './public/css/base.css' ]; then
-        echo -e "\033[1;34mCleaning up base Tailwind CSS file...\033[0m"
+        echo -e "${COLOR_BLUE}Cleaning up base Tailwind CSS file...${COLOR_RESET}"
         rm ./public/css/base.css
-        echo -e "\033[0;32mDone.\033[0m"
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
     fi
 
-    echo -e "\033[1;34mStarting the server in a screen session...\033[0m"
-    screen -dmS $SCREEN_NAME npm start
-    echo -e "\033[1;32mDone. Server is up and running on port $PORT!\033[0m"
+    if [ -f './node.log' ]; then
+        echo -e "${COLOR_BLUE}Deleting node log...${COLOR_RESET}"
+        rm ./node.log
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+    fi
+
+    echo -e "${COLOR_BLUE}Starting server...${COLOR_RESET}"
+    npm start > node.log 2>&1 &
+    echo -e "${COLOR_GREEN}Done. Server up and running on port $PORT!${COLOR_RESET}"
 }
 
 function start_server() {
-    clear
     check_setup
+
+    if [ "$DB_ALIVE" == "true" ]; then
+        echo -e "${COLOR_YELLOW}Database services will not be restarted. Skipping Docker operations.${COLOR_RESET}"
+    else
+        echo -e "${COLOR_BLUE}Starting database...${COLOR_RESET}"
+        echo "This may require your sudo password"
+        sudo docker compose up -d
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+    fi
 
     PID=$(lsof -t -i:$PORT)
 
     if [ -n "$PID" ]; then
-        echo -e "\033[1;33mA server process is already running on port $PORT. Skipping server start.\033[0m"
+        echo -e "${COLOR_YELLOW}Server process already running on port $PORT. Skipping server start.${COLOR_RESET}"
         return
     fi
 
-    if screen -list | grep -q "$SCREEN_NAME"; then
-        echo -e "\033[1;33mA screen session named '$SCREEN_NAME' is already running. Skipping server start.\033[0m"
-        return
-    fi
-
-    if [ -f './public' ]; then
-        echo -e "\033[1;34mCreating the public directories...\033[0m"
-        check_dirs "create"
-    fi
+    echo -e "${COLOR_BLUE}Creating public directories...${COLOR_RESET}"
+    check_dirs "create"
 
     if [ -f './src/css/main.css' ]; then
-        echo -e "\033[1;34mDeleting the Tailwind CSS...\033[0m"
+        echo -e "${COLOR_BLUE}Deleting old Tailwind CSS...${COLOR_RESET}"
         rm ./src/css/main.css
-        echo -e "\033[0;32mDone.\033[0m"
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
     fi
 
-    echo -e "\033[1;34mBuilding the project...\033[0m"
-    if ! npm run build > /dev/null; then
-        echo -e "\033[0;31mBuild failed. Please check for errors above.\033[0m"
+    if [ -f './node.log' ]; then
+        echo -e "${COLOR_BLUE}Deleting node log...${COLOR_RESET}"
+        rm ./node.log
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+    fi
+
+    echo -e "${COLOR_BLUE}Building project...${COLOR_RESET}"
+    if ! npm run build > node.log 2>&1; then
+        echo -e "${COLOR_RED}Build failed. Please check for errors above.${COLOR_RESET}"
         exit 1
     fi
 
     if [ -f './public/css/base.css' ]; then
-        echo -e "\033[1;34mCleaning up base Tailwind CSS file...\033[0m"
+        echo -e "${COLOR_BLUE}Cleaning up base Tailwind CSS file...${COLOR_RESET}"
         rm ./public/css/base.css
-        echo -e "\033[0;32mDone.\033[0m"
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
     fi
 
-    echo -e "\033[1;34mStarting the server in a screen session...\033[0m"
-    screen -dmS "$SCREEN_NAME" npm start
-    echo -e "\033[1;32mDone. Server is up and running on port $PORT!\033[0m"
+    echo -e "${COLOR_BLUE}Starting server...${COLOR_RESET}"
+    npm start > node.log 2>&1 &
+    echo -e "${COLOR_GREEN}Done. Server up and running on port $PORT!${COLOR_RESET}"
 }
 
 function stop_server() {
-    clear
     check_setup
     PID=$(lsof -t -i:$PORT)
 
-    if [ -f './public' ]; then
-        echo -e "\033[1;34mDeleting the public directories...\033[0m"
+    if [ "$DB_ALIVE" == "true" ]; then
+        echo -e "${COLOR_YELLOW}Database services will not be stopped. Skipping Docker operations.${COLOR_RESET}"
+    else
+        echo -e "${COLOR_BLUE}Stopping database...${COLOR_RESET}"
+        echo "This may require your sudo password"
+        sudo docker compose down
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+    fi
+
+    if [ -d './public' ]; then
+        echo -e "${COLOR_BLUE}Deleting public directories...${COLOR_RESET}"
         check_dirs "delete"
     fi
 
     if [ -f './src/css/main.css' ]; then
-        echo -e "\033[1;34mDeleting the Tailwind CSS...\033[0m"
+        echo -e "${COLOR_BLUE}Deleting Tailwind CSS...${COLOR_RESET}"
         rm ./src/css/main.css
-        echo -e "\033[0;32mDone.\033[0m"
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+    fi
+
+    if [ -f './node.log' ]; then
+        echo -e "${COLOR_BLUE}Deleting node log...${COLOR_RESET}"
+        rm ./node.log
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
     fi
 
     PIDS=$(lsof -t -i:$PORT)
 
     if [ -n "$PIDS" ]; then
-        echo -e "\033[1;34mStopping server...\033[0m"
+        echo -e "${COLOR_BLUE}Stopping server...${COLOR_RESET}"
         for PID in $PIDS; do
-            kill "$PID" || echo -e "\033[1;31mFailed to kill PID: $PID\033[0m"
+            kill "$PID" || echo -e "${COLOR_RED}Failed to kill PID: $PID${COLOR_RESET}"
         done
-        screen -S "$SCREEN_NAME" -X quit 2>/dev/null || echo -e "\033[1;33mNo screen session to quit.\033[0m"
-        echo -e "\033[0;32mDone.\033[0m"
+        screen -S "$SCREEN_NAME" -X quit 2>/dev/null || echo -e "${COLOR_YELLOW}No screen session to quit.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
     else
-        echo -e "\033[1;33mNo process found on port $PORT.\033[0m"
+        echo -e "${COLOR_YELLOW}No process found on port $PORT.${COLOR_RESET}"
     fi
 }
 
@@ -196,111 +309,82 @@ function check_status() {
     PID=$(lsof -t -i:$PORT)
 
     if [ -n "$PID" ]; then
-        echo -e "\033[0;32mServer is running with PID: $PID\033[0m"
+        echo -e "${COLOR_GREEN}Server running with PID: $PID${COLOR_RESET}"
     else
-        echo -e "\033[0;31mServer is not running.\033[0m"
+        echo -e "${COLOR_RED}Server not running.${COLOR_RESET}"
     fi
 }
 
 function setup() {
     clear
-    echo -e "\033[1;34mWelcome to the aidxnFUNbeta 'manage' script setup!\033[0m"
+    echo -e "${COLOR_BLUE}Welcome to the aidxnFUNbeta 'manage' script setup!${COLOR_RESET}"
     echo
-    echo -e "\033[1;32mA custom script built by ihatenodejs\033[0m"
-    echo -e "\033[1;33mand presented by forkers like you...\033[0m"
-    echo
-    read -n 1 -s -r -p "Press any key to continue..."
-    clear
-
-    echo -e "\n\nThis script requires Node.js and NPM to be installed on your system."
-    echo "Please ensure you have them installed before proceeding."
+    echo -e "${COLOR_GREEN}A custom script built by ihatenodejs${COLOR_RESET}"
+    echo -e "${COLOR_YELLOW}and presented by forkers like you...${COLOR_RESET}"
     echo
     read -n 1 -s -r -p "Press any key to continue..."
     clear
 
-    if command -v node >/dev/null 2>&1; then
-        echo -e "\n✅ Node.js is already installed. Version: $(node -v)"
-    else
-        echo -e "\n❌ Node.js is not installed."
-    fi
+    echo -e "\n\nThis script requires Node.js, NPM, and Docker to be installed on your system."
+    echo "Please ensure you have these tools installed before proceeding."
+    echo -e "\nPress any key to continue with tool installation..."
+    read -n 1 -s -r -p ""
 
-    if command -v npm >/dev/null 2>&1; then
-        echo -e "✅ NPM is already installed. Version: $(npm -v)"
-    else
-        echo -e "❌ NPM is not installed."
-    fi
-
-    if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
-        echo -e "\nThis script requires Node.js and NPM to be installed on your system."
-        echo "We will now proceed to install it on your system using NVM."
-
-        echo -e "\nWe will be installing Node.js 20.18.0\n"
-        read -n 1 -s -r -p "Press any key to install NVM and Node.js..."
-
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-        export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        nvm install 20.18.0
-        sudo apt install npm
-
-        echo
-        echo "NodeJS and NPM should have been installed."
-
-        read -n 1 -s -r -p "Press any key to continue..."
-        clear
-
-        echo "We will now install everything required on the NodeJS side."
-        echo "Press any to confirm you're okay with this."
-        echo
-        read -n 1 -s -r -p "Press any key to continue..."
-        npm install
-        echo
-        echo "Hopefully everything installed right!"
-    else
-        echo -e "\nAll required dependencies are installed. No further action needed."
-    fi
-
-    echo -e "\n\nmanage will now check if 'screen' is installed."
-    echo "You may need to enter your sudo password."
-    echo
+    check_docker
     install_tools
-    echo
-    touch $SETUP_FILE
-    read -n 1 -s -r -p "Press any key to continue..."
 
-    clear
-    echo "Have a nice day!"
-    echo
+    echo -e "\n\nSetup complete! Press any key to exit."
+    echo -e "You should disconnect your SSH session/logout, and reconnect/login for best results."
+    read -n 1 -s -r -p ""
+    exit 0
 }
 
 function check_setup() {
-    if [ ! -f $SETUP_FILE ]; then
-        echo "Setup has not been completed. Please run './manage setup' first."
-        exit 1
+    if [ ! -f "$SETUP_FILE" ]; then
+        setup
     fi
 }
 
+DB_ALIVE="false"
+if [[ $# -eq 0 ]]; then
+    show_help
+    exit 0
+fi
+
+for arg in "$@"; do
+    if [[ "$arg" == "--db-alive" ]]; then
+        DB_ALIVE="true"
+        break
+    fi
+done
+
 case $1 in
-    help|-h|--help)
-        show_help
-        ;;
     up)
+        check_setup
         start_server
         ;;
     down)
+        check_setup
         stop_server
         ;;
     restart)
+        check_setup
         restart_server
         ;;
-    -s|--status)
+    setup)
+        check_setup
+        ;;
+    -h|--help|help)
+        check_setup
+        show_help
+        ;;
+    -s|--status|status)
+        check_setup
         check_status
         ;;
-    setup)
-        setup
-        ;;
     *)
-        echo "Unknown command."
+        check_setup
+        echo -e "${COLOR_RED}Invalid command: $1${COLOR_RESET}"
         show_help
         ;;
 esac
