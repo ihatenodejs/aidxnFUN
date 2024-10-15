@@ -80,10 +80,14 @@ function install_docker() {
             echo "Couldn't find example Docker Compose file"
         else
             sudo cp docker-compose.yml.example docker-compose.yml
+            echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
         fi
     else
         echo -e "${COLOR_GREEN}Docker Compose file already exists, skipping.${COLOR_RESET}"
     fi
+    echo -e "${COLOR_BLUE}Creating Docker network...${COLOR_RESET}"
+    docker network create --subnet=10.5.0.0/16 aidxnfun-n
+    echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     sudo usermod -aG docker $USER
     echo -e "${COLOR_GREEN}User added to Docker group. Please log out and back in for the changes to take effect.${COLOR_RESET}"
 }
