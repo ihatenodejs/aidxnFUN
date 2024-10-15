@@ -93,6 +93,7 @@ This can be used in conjunction with the example .env file compatible with this 
 
 ```dotenv
 DB_HOST="10.5.0.5"
+DB_PORT=3306
 DB_USER="root"
 DB_PASSWORD="iloveaidxnfun123"
 DB_NAME="aidxnfun"
