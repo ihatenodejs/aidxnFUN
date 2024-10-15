@@ -2,7 +2,8 @@ const express = require('express');
 const path = require('path');
 const mysql = require('mysql2');
 const fs = require('fs');
-require('dotenv').config();
+
+const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -11,10 +12,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    host: config.DB_HOST,
+    port: config.DB_PORT,
+    user: config.DB_USER,
+    password: config.DB_PASSWORD,
+    database: config.DB_NAME,
 });
 
 const dbInit = () => {
