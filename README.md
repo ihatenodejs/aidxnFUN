@@ -124,5 +124,5 @@ Usage: `./manage [command] [options]`
 + `--db-alive` - Do not restart Docker services (database).
 
 # To-Do
-- [ ] Add database support
-- [ ] Add view counter
+- [X] Add database support
+- [X] Add view counter
