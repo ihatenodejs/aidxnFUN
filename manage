@@ -1,9 +1,5 @@
 #!/bin/bash
 
-if [ -f .env ]; then
-    export "$(grep -v '^#' .env | xargs)"
-fi
-
 PORT=3000
 SETUP_FILE=".setup_complete"
 COLOR_RESET="\033[0m"
@@ -51,15 +47,15 @@ function install_tools() {
         echo
         sudo apt-get update
         sudo apt-get install npm
-        echo -e "${COLOR_BLUE}Copying env file...${COLOR_RESET}"
-        if [ ! -d "./.env" ]; then
-            if [ ! -d "./.env.example" ]; then
-                echo "Couldn't find example env file"
+        if [ ! -d "./config.json" ]; then
+            echo -e "${COLOR_BLUE}Copying config file...${COLOR_RESET}"
+            if [ ! -d "./config.json.example" ]; then
+                echo "Couldn't find example config file"
             else
-                sudo cp .env.example .env
+                sudo cp config.json.example config.json
             fi
         else
-            echo -e "${COLOR_GREEN}env file already exists, skipping.${COLOR_RESET}"
+            echo -e "${COLOR_GREEN}config file already exists, skipping.${COLOR_RESET}"
         fi
         echo -e "${COLOR_BLUE}Installing NPM deps...${COLOR_RESET}"
         npm install > node.log 2>&1
