@@ -194,6 +194,8 @@ function restart_server() {
     if ! npm run build > node.log 2>&1; then
         echo -e "${COLOR_RED}Build failed. Please check for errors above.${COLOR_RESET}"
         exit 1
+    else
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     fi
 
     if [ -f './public/css/base.css' ]; then
@@ -251,6 +253,8 @@ function start_server() {
     if ! npm run build > node.log 2>&1; then
         echo -e "${COLOR_RED}Build failed. Please check for errors above.${COLOR_RESET}"
         exit 1
+    else
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     fi
 
     if [ -f './public/css/base.css' ]; then
