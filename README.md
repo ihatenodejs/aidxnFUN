@@ -1,4 +1,6 @@
 # aidxnFUN
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN?ref=badge_shield)
+
 Built with Tailwind CSS, EJS, ExpressJS, and NodeJS for a backend for it all.
 This is a more modern version of design.
 
@@ -56,3 +58,7 @@ After doing that, you are now ready to use the script.
 + **Restart Server:** `./manage restart`
 + + **Server Status:** `./manage --status`
 + **Help:** `./manage help`
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN?ref=badge_large)
