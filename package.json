@@ -1,5 +1,5 @@
 {
-  "name": "aidxnfunbeta",
+  "name": "aidxnfun",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -109,7 +109,7 @@
     "yaml": "^2.5.1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "author": "ihatenodejs",
+  "license": "CC-BY-SA-4.0",
+  "description": "The full code of my website"
 }
