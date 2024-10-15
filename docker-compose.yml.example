@@ -6,4 +6,6 @@ services:
       MYSQL_DATABASE: aidxnfun
       MYSQL_USER: aidxnfun
       MYSQL_PASSWORD: iloveaidxnfun
+    volumes:
+      - /docker/db/mysql:/var/lib/mysql
     restart: unless-stopped

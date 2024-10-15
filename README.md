@@ -68,6 +68,8 @@ services:
       MYSQL_DATABASE: aidxnfun
       MYSQL_USER: aidxnfun
       MYSQL_PASSWORD: iloveaidxnfun
+    volumes:
+      - /docker/db/mysql:/var/lib/mysql
     restart: unless-stopped
   phpmyadmin:
     image: phpmyadmin
@@ -92,11 +94,11 @@ networks:
 This can be used in conjunction with the example .env file compatible with this file:
 
 ```dotenv
-DB_HOST="10.5.0.5"
+DB_HOST=10.5.0.5
 DB_PORT=3306
-DB_USER="root"
-DB_PASSWORD="iloveaidxnfun123"
-DB_NAME="aidxnfun"
+DB_USER=root
+DB_PASSWORD=iloveaidxnfun123
+DB_NAME=aidxnfun
 ```
 
 This config will create a MariaDB instance, with a pre-created database, as long well as supplied user credentials. A PhpMyAdmin instance will additionally be spun up for easy management and inspection of the database. You may plug in `10.5.0.5` as the host on [your ip]:80 in your web browser (on the computer running Docker).
