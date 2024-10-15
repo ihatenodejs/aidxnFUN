@@ -2,13 +2,13 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN?ref=badge_shield&issueType=license)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN?ref=badge_shield&issueType=security)
 
-Built with Tailwind CSS, EJS, ExpressJS, and NodeJS for a backend for it all.
+Built with Tailwind CSS, EJS, Express.js, and Node.js for a backend for it all.
 This is a more modern version of design.
 This project is released under the CC0-1.0 license. The code and content are in the public domain.
 
 This repo may be archived at times due to me not needing a new design or extra features.
 
-# Install and self host
+# Install and self-host
 Have a weird obsession? Want a pre-built site you can use for free? Host aidxnFUN!
 As the code is available under the CC0-1.0 license, which means you should feel free and encouraged to change content, design, whatever!
 During this process, `node` (20.08.0), `npm`, and `docker` will be installed on your computer.
@@ -44,9 +44,9 @@ Please note the /status endpoint will be broken with the original servers as COR
 Windows is currently not supported by aidxnFUN yet. I suggest you use WSL, and follow the Linux instructions, or purchase a server.
 
 # How it works
-This website uses NodeJS, ExpressJS for a server, EJS for templating, and Tailwind CSS for the frontend CSS. It additionally uses Docker (w/ MariaDB and optionally PhpMyAdmin) for managing the database, which is used in the analytics system.
+This website uses Node.js, Express.js for a server, EJS for templating, and Tailwind CSS for the frontend CSS. It additionally uses Docker (w/ MariaDB and optionally PhpMyAdmin) for managing the database, which is used in the analytics system.
 The `manage` script uses all of those tools to manage the server for you executes the repetitive tasks for you automatically.
-The views contain both regular page shards (full-ish pages) and generic shards (fragments of pages, widgets, etc). I define a "shard" as an EJS template, which are pieced together into a pretty little website. The shards hold individual elements like music widgets, while a regular page shard is the page that contains the music widget, which the end user sees. This is helpful for understanding the code.
+The views contain both regular page shards (full-ish pages) and generic shards (fragments of pages, widgets, etc.). I define a "shard" as an EJS template, which are pieced together into a pretty little website. The shards hold individual elements like music widgets, while a regular page shard is the page that contains the music widget, which the end user sees. This is helpful for understanding the code.
 
 Thus far, shards are included for a music widget, the header, and the footer of the pages.
 
@@ -116,7 +116,7 @@ After doing that, you are now ready to use the script.
 
 ## Known issues and suggestions
 ### Issue 1
-There is a known issue where NodeJS will not wait for the database starts, before polling it.
+There is a known issue where Node.js will not wait for the database starts, before polling it.
 ### Issue 1 Workaround
 I suggest doing the following commands to start your server
 ```bash
