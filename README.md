@@ -1,12 +1,13 @@
 # aidxnFUN
 Built with Tailwind CSS, EJS, ExpressJS, and NodeJS for a backend for it all.
 This is a more modern version of design.
+This project is released under the CC0-1.0 license. The code and content are in the public domain.
 
 This repo may be archived at times due to me not needing a new design or extra features.
 
 # Install and self host
 Have a weird obsession? Want a pre-built site you can use for free? Host aidxnFUN!
-As the code is avaliable under the CC-BY-SA-4.0 license, which means you should feel free and encouraged to change content, design, whatever!
+As the code is avaliable under the CC0-1.0 license, which means you should feel free and encouraged to change content, design, whatever!
 During this process, `screen`, `node` (20.08.0), and `docker` will be installed on your computer.
 
 Please note the /status endpoint will be broken with the original servers as CORS is blocked on sites not requesting from my personal domain.
