@@ -10,8 +10,8 @@ This repo may be archived at times due to me not needing a new design or extra f
 
 # Install and self host
 Have a weird obsession? Want a pre-built site you can use for free? Host aidxnFUN!
-As the code is avaliable under the CC0-1.0 license, which means you should feel free and encouraged to change content, design, whatever!
-During this process, `node` (20.08.0), and `docker` will be installed on your computer.
+As the code is available under the CC0-1.0 license, which means you should feel free and encouraged to change content, design, whatever!
+During this process, `node` (20.08.0), `npm`, and `docker` will be installed on your computer.
 
 Please note the /status endpoint will be broken with the original servers as CORS is blocked on sites not requesting from my personal domain.
 
@@ -25,23 +25,20 @@ Please note the /status endpoint will be broken with the original servers as COR
    ```bash
    ./manage setup
    ```
-3. Copy template files and edit them
+3. Edit example files
    ```bash
-   cp docker-compose.yml.example docker-compose.yml # Copy Docker Compose file
-   cp .env.example .env # Copy env file
-   
    nano docker-compose.yml # Edit Docker Compose (database server)
-   nano .env # Edit env (database config)
+   nano config.json # Edit config.json (database config)
    ```
    
-   When editing .env, use server details from docker-compose.yml so they are linked together. Ensure you double-check the IP or hostname of the Docker container, and link that with the .env file. This is crucial, or your database will not be connected.
+   When editing config.json, use server details from docker-compose.yml so they are linked together. Ensure you double-check the IP or hostname of the Docker container, and link that with the .env file. This is crucial, or your database will not be connected.
 
    Database features are only for analytics, at this time.
 4. Start the server
    ```bash
    ./manage up
    ```
-   A server will now start on port :3000, and be accessable from your web browser at http://localhost:3000/
+   A server will now start on port :3000, and be accessible from your web browser at http://localhost:3000/. I highly suggest creating a NGINX reverse proxy for this, especially if you plan to point this to a domain.
 
 ## Windows
 Windows is currently not supported by aidxnFUN yet. I suggest you use WSL, and follow the Linux instructions, or purchase a server.
@@ -91,14 +88,17 @@ networks:
           gateway: 10.5.0.1
 ```
 
-This can be used in conjunction with the example .env file compatible with this file:
+This can be used in conjunction with this example config.json file:
 
-```dotenv
-DB_HOST=10.5.0.5
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=iloveaidxnfun123
-DB_NAME=aidxnfun
+```json
+{
+   "DB_HOST": "10.5.0.05",
+   "DB_PORT": 3306,
+   "DB_USER": "root",
+   "DB_PASSWORD": "iloveaidxnfun123",
+   "DB_NAME": "aidxnfun",
+   "PORT": 3000
+}
 ```
 
 This config will create a MariaDB instance, with a pre-created database, as long well as supplied user credentials. A PhpMyAdmin instance will additionally be spun up for easy management and inspection of the database. You may plug in `10.5.0.5` as the host on [your ip]:80 in your web browser (on the computer running Docker).
@@ -138,6 +138,11 @@ I suggest doing the following commands to start your server
 
 ## `manage` options
 + `--db-alive` - Do not restart Docker services (database).
+
+# Troubleshooting
+I highly suggest you take a peek at the `node.log` file's contents. It's in the same directory as the `manage` script. This shows the web server's full startup, which can help you find out if the database isn't configured right, or something else is going wrong.
+
+If the database just started, give it 30 or so seconds and issue `./manage restart --db-alive` to restart the server without touching the database. It's common to get into a Docker-and-Node restart loop (which are not in sync) which I'm fixing.
 
 # To-Do
 - [X] Add database support
