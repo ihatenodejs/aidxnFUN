@@ -57,3 +57,7 @@ After doing that, you are now ready to use the script.
 + **Restart Server:** `./manage restart`
 + **Server Status:** `./manage --status`
 + **Help:** `./manage help`
+
+# To-Do
+- [ ] Add database support
+- [ ] Add view counter
