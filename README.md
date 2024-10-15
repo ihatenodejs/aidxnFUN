@@ -69,7 +69,7 @@ services:
       MYSQL_USER: aidxnfun
       MYSQL_PASSWORD: iloveaidxnfun
     volumes:
-      - /docker/db/mysql:/var/lib/mysql
+      - ./db_storage:/var/lib/mysql
     restart: unless-stopped
   phpmyadmin:
     image: phpmyadmin
