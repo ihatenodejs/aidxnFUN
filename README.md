@@ -6,8 +6,8 @@ This repo may be archived at times due to me not needing a new design or extra f
 
 # Install and self host
 Have a weird obsession? Want a pre-built site you can use for free? Host aidxnFUN!
-As the code is avaliable under the CC Zero license, which means you should feel free and encouraged to change content, design, whatever!
-During this process, `screen`, `node` (20.08.0,
+As the code is avaliable under the CC-BY-SA-4.0 license, which means you should feel free and encouraged to change content, design, whatever!
+During this process, `screen`, `node` (20.08.0), and `docker` will be installed on your computer.
 
 Please note the /status endpoint will be broken with the original servers as CORS is blocked on sites not requesting from my personal domain.
 
