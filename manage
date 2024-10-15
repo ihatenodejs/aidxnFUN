@@ -197,13 +197,8 @@ function restart_server() {
         echo -e "${COLOR_BLUE}Starting database...${COLOR_RESET}"
         echo "This may require your sudo password"
         sudo docker compose up -d
-
-        echo "Waiting for the db at $DB_HOST:$DB_PORT to be available..."
-        while ! check_db; do
-            sleep 2
-            echo "Still waiting for the database..."
-        done
-
+        echo -e "${COLOR_BLUE}Waiting 30 seconds for database startup...${COLOR_RESET}"
+        sleep 30
         echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
     fi
 
@@ -241,13 +236,8 @@ function start_server() {
         echo -e "${COLOR_BLUE}Starting database...${COLOR_RESET}"
         echo "This may require your sudo password"
         sudo docker compose up -d
-
-        echo "Waiting for the db at $DB_HOST:$DB_PORT to be available..."
-        while ! check_db; do
-            sleep 2
-            echo "Still waiting for the database..."
-        done
-
+        echo -e "${COLOR_BLUE}Waiting 30 seconds for database startup...${COLOR_RESET}"
+        sleep 30
         echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
     fi
 
