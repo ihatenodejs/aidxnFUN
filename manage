@@ -13,6 +13,39 @@ check_db() {
     nc -z "$DB_HOST" "$DB_PORT"
 }
 
+function install_docker() {
+    echo -e "${COLOR_BLUE}Docker is not installed. Installing now...${COLOR_RESET}"
+    echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
+    echo
+    sudo apt-get install ca-certificates curl
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+    echo
+    echo -e "${COLOR_GREEN}Docker installed successfully.${COLOR_RESET}"
+    echo -e "${COLOR_BLUE}Adding user to the Docker group...${COLOR_RESET}"
+    if [ ! -d "./docker-compose.yml" ]; then
+        if [ ! -d "./docker-compose.yml.example" ]; then
+            echo "Couldn't find example Docker Compose file"
+        else
+            sudo cp docker-compose.yml.example docker-compose.yml
+            echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
+        fi
+    else
+        echo -e "${COLOR_GREEN}Docker Compose file already exists, skipping.${COLOR_RESET}"
+    fi
+    echo -e "${COLOR_BLUE}Creating Docker network...${COLOR_RESET}"
+    sudo docker network create --subnet=10.5.0.0/16 aidxnfun-n
+    echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
+    sudo usermod -aG docker $USER
+    echo -e "${COLOR_GREEN}User added to Docker group. Please log out and back in for the changes to take effect.${COLOR_RESET}"
+}
+
 function install_tools() {
     if ! command -v node &> /dev/null; then
         echo -e "${COLOR_RED}NodeJS is not installed. Installing now...${COLOR_RESET}"
@@ -41,6 +74,18 @@ function install_tools() {
         echo -e "${COLOR_GREEN}Netcat is installed. Version: $(nc -h | grep -oP '\[v[0-9.]+\-[0-9]+\]' | tr -d '[]')${COLOR_RESET}"
     fi
 
+    if ! command -h docker &> /dev/null; then
+            echo -e "${COLOR_RED}Docker is not installed. Installing now...${COLOR_RESET}"
+            echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
+            echo
+            install_docker
+            echo
+            echo -e "${COLOR_GREEN}Docker installed successfully.${COLOR_RESET}"
+            echo
+        else
+            echo -e "${COLOR_GREEN}Docker is installed. Version: $(nc -h | grep -oP '\[v[0-9.]+\-[0-9]+\]' | tr -d '[]')${COLOR_RESET}"
+        fi
+
     if ! command -v npm &> /dev/null; then
         echo -e "${COLOR_RED}NPM is not installed. Installing now...${COLOR_RESET}"
         echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
@@ -68,32 +113,6 @@ function install_tools() {
         touch $SETUP_FILE
     fi
 }
-
-function install_docker() {
-    echo -e "${COLOR_BLUE}Docker is not installed. Installing now...${COLOR_RESET}"
-    echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
-    echo
-    curl -fsSL test.docker.com -o get-docker.sh && sh get-docker.sh
-    echo
-    echo -e "${COLOR_GREEN}Docker installed successfully.${COLOR_RESET}"
-    echo -e "${COLOR_BLUE}Adding user to the Docker group...${COLOR_RESET}"
-    if [ ! -d "./docker-compose.yml" ]; then
-        if [ ! -d "./docker-compose.yml.example" ]; then
-            echo "Couldn't find example Docker Compose file"
-        else
-            sudo cp docker-compose.yml.example docker-compose.yml
-            echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
-        fi
-    else
-        echo -e "${COLOR_GREEN}Docker Compose file already exists, skipping.${COLOR_RESET}"
-    fi
-    echo -e "${COLOR_BLUE}Creating Docker network...${COLOR_RESET}"
-    sudo docker network create --subnet=10.5.0.0/16 aidxnfun-n
-    echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
-    sudo usermod -aG docker $USER
-    echo -e "${COLOR_GREEN}User added to Docker group. Please log out and back in for the changes to take effect.${COLOR_RESET}"
-}
-
 
 function show_help() {
     echo -e "${COLOR_BLUE}Usage:${COLOR_RESET} ./manage [command] [options]"
