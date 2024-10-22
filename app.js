@@ -63,7 +63,7 @@ const dbInit = () => {
 };
 
 const insertPages = () => {
-    const pages = ['/', '/about', '/contact', '/verify', '/status', '/design', '/projects'];
+    const pages = ['/', '/about', '/contact', '/verify', '/status', '/design', '/projects', '/cloud'];
     pages.forEach(page => {
         const sql = `INSERT IGNORE INTO page_views (page, views) VALUES (?, 0)`;
         db.query(sql, [page], (error) => {
@@ -92,7 +92,7 @@ app.post('/api/log-view', (req, res) => {
     });
 });
 
-const routes = ['/', '/about', '/contact', '/verify', '/status', '/design', '/projects'];
+const routes = ['/', '/about', '/contact', '/verify', '/status', '/design', '/projects', '/cloud'];
 routes.forEach(route => {
     app.get(route, (req, res) => {
         res.render(route === '/' ? 'index' : route.slice(1), { req });
