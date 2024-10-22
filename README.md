@@ -38,7 +38,7 @@ Please note the /status endpoint will be broken with the original servers as COR
    ```bash
    ./manage up
    ```
-   A server will now start on port :3000, and be accessible from your web browser at http://localhost:3000/. I highly suggest creating a NGINX reverse proxy for this, especially if you plan to point this to a domain.
+   A server will now start on port :5566, and be accessible from your web browser at http://localhost:5566/. I highly suggest creating a NGINX reverse proxy for this, especially if you plan to point this to a domain.
 
 ## Windows
 Windows is currently not supported by aidxnFUN yet. I suggest you use WSL, and follow the Linux instructions, or purchase a server.
