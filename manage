@@ -99,7 +99,7 @@ function install_tools() {
 }
 
 function show_help() {
-    echo -e "${COLOR_GREEN}manage version:${COLOR_RESET} ${COLOR_BLUE}1.0.0${COLOR_RESET}"
+    echo -e "${COLOR_GREEN}manage version:${COLOR_RESET} ${COLOR_BLUE}1.0.0 bionic${COLOR_RESET}"
     echo -e "${COLOR_BLUE}Usage:${COLOR_RESET} ./manage [command] [options]\n"
     echo -e "${COLOR_YELLOW}Commands:${COLOR_RESET}"
     echo -e "  ${COLOR_CYAN}help, -h, --help${COLOR_RESET}      Shows this help message."
