@@ -23,11 +23,10 @@ function install_docker() {
       $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
       sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     sudo apt-get update
-    echo
-    echo -e "${COLOR_GREEN}Docker installed successfully.${COLOR_RESET}"
+    echo -e "\n${COLOR_GREEN}Docker installed successfully.${COLOR_RESET}"
     echo -e "${COLOR_BLUE}Adding user to the Docker group...${COLOR_RESET}"
-    if [ ! -d "./docker-compose.yml" ]; then
-        if [ ! -d "./docker-compose.yml.example" ]; then
+    if [ ! -d "docker-compose.yml" ]; then
+        if [ ! -d "docker-compose.yml.example" ]; then
             echo "Couldn't find example Docker Compose file"
         else
             sudo cp docker-compose.yml.example docker-compose.yml
@@ -46,52 +45,42 @@ function install_docker() {
 function install_tools() {
     if ! command -v node &> /dev/null; then
         echo -e "${COLOR_RED}NodeJS is not installed. Installing now...${COLOR_RESET}"
-        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
-        echo
+        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
         export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         nvm install 20.18.0
-        echo
-        echo -e "${COLOR_GREEN}NodeJS installed successfully.${COLOR_RESET}"
-        echo
+        echo -e "\n${COLOR_GREEN}NodeJS installed successfully.${COLOR_RESET}\n"
     else
         echo -e "${COLOR_GREEN}NodeJS is installed. Version: $(node -v)${COLOR_RESET}"
     fi
 
     if ! command -h nc &> /dev/null; then
         echo -e "${COLOR_RED}Netcat is not installed. Installing now...${COLOR_RESET}"
-        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
-        echo
+        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
         sudo apt-get install netcat-traditional
-        echo
-        echo -e "${COLOR_GREEN}Netcat installed successfully.${COLOR_RESET}"
-        echo
+        echo -e "\n${COLOR_GREEN}Netcat installed successfully.${COLOR_RESET}\n"
     else
         echo -e "${COLOR_GREEN}Netcat is installed. Version: $(nc -h | grep -oP '\[v[0-9.]+\-[0-9]+\]' | tr -d '[]')${COLOR_RESET}"
     fi
 
     if ! command -h docker &> /dev/null; then
-            echo -e "${COLOR_RED}Docker is not installed. Installing now...${COLOR_RESET}"
-            echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
-            echo
-            install_docker
-            echo
-            echo -e "${COLOR_GREEN}Docker installed successfully.${COLOR_RESET}"
-            echo
-        else
-            echo -e "${COLOR_GREEN}Docker is installed. Version: $(nc -h | grep -oP '\[v[0-9.]+\-[0-9]+\]' | tr -d '[]')${COLOR_RESET}"
-        fi
+        echo -e "${COLOR_RED}Docker is not installed. Installing now...${COLOR_RESET}"
+        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
+        install_docker
+        echo -e "\n${COLOR_GREEN}Docker installed successfully.${COLOR_RESET}\n"
+    else
+        echo -e "${COLOR_GREEN}Docker is installed. Version: $(nc -h | grep -oP '\[v[0-9.]+\-[0-9]+\]' | tr -d '[]')${COLOR_RESET}"
+    fi
 
     if ! command -v npm &> /dev/null; then
         echo -e "${COLOR_RED}NPM is not installed. Installing now...${COLOR_RESET}"
-        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
-        echo
+        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
         sudo apt-get update
         sudo apt-get install npm
-        if [ ! -d "./config.json" ]; then
+        if [ ! -d "config.json" ]; then
             echo -e "${COLOR_BLUE}Copying config file...${COLOR_RESET}"
-            if [ ! -d "./config.json.example" ]; then
+            if [ ! -d "config.json.example" ]; then
                 echo "Couldn't find example config file"
             else
                 sudo cp config.json.example config.json
@@ -101,9 +90,7 @@ function install_tools() {
         fi
         echo -e "${COLOR_BLUE}Installing NPM deps...${COLOR_RESET}"
         npm install > node.log 2>&1
-        echo
-        echo -e "${COLOR_GREEN}NPM installed successfully.${COLOR_RESET}"
-        echo
+        echo -e "\n${COLOR_GREEN}NPM installed successfully.${COLOR_RESET}\n"
         touch $SETUP_FILE
     else
         echo -e "${COLOR_GREEN}NPM is installed. Version: $(npm -v)${COLOR_RESET}"
@@ -112,18 +99,16 @@ function install_tools() {
 }
 
 function show_help() {
-    echo -e "${COLOR_BLUE}Usage:${COLOR_RESET} ./manage [command] [options]"
-    echo
+    echo -e "${COLOR_GREEN}manage version:${COLOR_RESET} ${COLOR_BLUE}1.0.0${COLOR_RESET}"
+    echo -e "${COLOR_BLUE}Usage:${COLOR_RESET} ./manage [command] [options]\n"
     echo -e "${COLOR_YELLOW}Commands:${COLOR_RESET}"
     echo -e "  ${COLOR_CYAN}help, -h, --help${COLOR_RESET}      Shows this help message."
     echo -e "  ${COLOR_CYAN}up${COLOR_RESET}                    Builds the project and starts the server."
     echo -e "  ${COLOR_CYAN}down${COLOR_RESET}                  Stops the server."
     echo -e "  ${COLOR_CYAN}restart${COLOR_RESET}               Restarts the server."
-    echo -e "  ${COLOR_CYAN}status, -s, --status${COLOR_RESET}  Checks if the server is running."
-    echo
+    echo -e "  ${COLOR_CYAN}status, -s, --status${COLOR_RESET}  Checks if the server is running.\n"
     echo -e "${COLOR_YELLOW}Options:${COLOR_RESET}"
-    echo -e "  ${COLOR_CYAN}--db-alive${COLOR_RESET}            Do not restart Docker services."
-    echo ""
+    echo -e "  ${COLOR_CYAN}--db-alive${COLOR_RESET}            Do not restart Docker services.\n"
 }
 
 function check_docker() {
@@ -350,15 +335,20 @@ function check_status() {
 
 function setup() {
     clear
-    echo -e "${COLOR_BLUE}Welcome to the aidxnFUNbeta 'manage' script setup!${COLOR_RESET}"
-    echo
+    echo -e "${COLOR_BLUE}Welcome to the aidxnFUNbeta 'manage' script setup!${COLOR_RESET}\n"
     echo -e "${COLOR_GREEN}A custom script built by ihatenodejs${COLOR_RESET}"
     echo -e "${COLOR_YELLOW}and presented by forkers like you...${COLOR_RESET}"
-    echo
-    read -n 1 -s -r -p "Press any key to continue..."
+    echo -e "\nPress any key to continue..."
+    read -n 1 -s -r -p ""
     clear
 
-    echo -e "\n\nThis script requires Node.js, NPM, and Docker to be installed on your system."
+    echo -e "${COLOR_BLUE}We will now proceed to copy configuration files automatically.${COLOR_RESET}"
+    echo -e "${COLOR_BLUE}You don't have to do anything but press any key.${COLOR_RESET}"
+    echo -e "\nPress any key to continue..."
+    read -n 1 -s -r -p ""
+    cp
+
+    echo -e "This script requires Node.js, NPM, and Docker to be installed on your system."
     echo "Please ensure you have these tools installed before proceeding."
     echo -e "\nPress any key to continue with tool installation..."
     read -n 1 -s -r -p ""
@@ -369,9 +359,6 @@ function setup() {
     clear
     echo -e "\n\n${COLOR_GREEN}Setup complete! Press any key to exit.${COLOR_RESET}\n"
     echo -e "${COLOR_BLUE}You should disconnect your SSH session/logout, and reconnect/login for best results.${COLOR_RESET}"
-    echo -e "${COLOR_BLUE}Make sure you copy the sample configuration files to production-ready ones like so:${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}#{COLOR_RESET} cp config.json.example config.json"
-    echo -e "${COLOR_GREEN}#{COLOR_RESET} cp docker-compose.yml.example docker-compose.yml"
     echo -e "${COLOR_BLUE}Then, start the server with this command:${COLOR_RESET}"
     echo -e "${COLOR_GREEN}#{COLOR_RESET} ./manage up\n"
     read -n 1 -s -r -p ""
