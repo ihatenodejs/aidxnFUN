@@ -14,9 +14,6 @@ check_db() {
 }
 
 function install_docker() {
-    echo -e "${COLOR_BLUE}Docker is not installed. Installing now...${COLOR_RESET}"
-    echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
-    echo
     sudo apt-get install ca-certificates curl
     sudo install -m 0755 -d /etc/apt/keyrings
     sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
@@ -369,8 +366,14 @@ function setup() {
     check_docker
     install_tools
 
-    echo -e "\n\nSetup complete! Press any key to exit."
-    echo -e "You should disconnect your SSH session/logout, and reconnect/login for best results."
+    clear
+    echo -e "\n\n${COLOR_GREEN}Setup complete! Press any key to exit.${COLOR_RESET}\n"
+    echo -e "${COLOR_BLUE}You should disconnect your SSH session/logout, and reconnect/login for best results.${COLOR_RESET}"
+    echo -e "${COLOR_BLUE}Make sure you copy the sample configuration files to production-ready ones like so:${COLOR_RESET}"
+    echo -e "${COLOR_GREEN}#{COLOR_RESET} cp config.json.example config.json"
+    echo -e "${COLOR_GREEN}#{COLOR_RESET} cp docker-compose.yml.example docker-compose.yml"
+    echo -e "${COLOR_BLUE}Then, start the server with this command:${COLOR_RESET}"
+    echo -e "${COLOR_GREEN}#{COLOR_RESET} ./manage up\n"
     read -n 1 -s -r -p ""
     exit 0
 }
