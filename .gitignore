@@ -135,3 +135,5 @@ docker-compose.yml
 .setup_complete
 config.json
 .db_init
+public/
+src/css/main.css
