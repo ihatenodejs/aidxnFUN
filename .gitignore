@@ -133,3 +133,4 @@ dist
 package-lock.json
 docker-compose.yml
 .setup_complete
+config.json
