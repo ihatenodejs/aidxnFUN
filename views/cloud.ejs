@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>aidxn.fun | about</title>
+    <link href="/css/main.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-slate-900 to-black text-white font-afacad-flux">
+<%- include('shards/header.ejs', { req: req }) %>
+<header class="flex flex-col items-center justify-center h-[40vh] p-6">
+    <h1 class="text-5xl font-bold mb-2 text-center">Cloud</h1>
+    <p class="text-lg text-gray-300 max-w-xl text-center mt-3">Looking to learn about my experience with the cloud?</p>
+</header>
+<div class="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-800 backdrop-blur-md shadow-xl rounded-2xl p-8 mx-4">
+    <h3 class="text-2xl font-bold mb-4 text-white">Platforms</h3>
+    <p class="text-slate-300 mb-4">I also work a <i>LOT</i> in the cloud, but not the type you might be thinking about. I almost have an obsession to enterprise cloud computing. Hell, you're actually connected to one... right now! Here are some of my favorite platforms, ranked.</p>
+    <p class="text-slate-300 mb-4">This section is a work in progress, for those who don't know cloud computing. I'm working to make the wording clearer, so the non-technical folk can still understand everything here!</p>
+    
+    <ol class="list-decimal list-inside space-y-3">
+        <li class="text-slate-300">
+            Oracle Cloud
+            <br><br>
+            This platform is my absolute favorite cloud platform. Five stars, easily. Oracle Cloud not only has the best free tier out of every other cloud solution I have tried, it has an amazing user interface. Everything is easy to navigate and find (especially very specific things, such as subnets).
+        </li>
+        <li class="text-slate-300">
+            Azure
+            <br><br>
+            Azure is another gold standard cloud platform, and is my second favorite (nobody can dethrone Oracle Cloud!) and I really enjoyed using their platform. While having a 12-month limit on their free tier, their credits are generous, and they have good support for any hiccups you might encounter. Their machines could be priced a bit better, especially for individuals.
+        </li>
+        <li class="text-slate-300">
+            AWS
+            <br><br>
+            Apart from being the most recognizable cloud platform (subjective), it has a fantastic API, and EC2 is quite intuitive. They have a limited 12-month free tier, which is pretty disappointing, and the instances you are able to create are not the best. Their pricing is horrible for individuals, however it's viable for an enterprise to use. Three stars.
+        </li>
+    </ol>
+</div>
+<div class="mt-3">
+    <%- include('shards/views.ejs') %>
+</div>
+<script src="js/main.js"></script>
+<%- include('shards/footer.ejs') %>
