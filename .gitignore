@@ -129,8 +129,9 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Custom
+# aidxnFUN specific
 package-lock.json
 docker-compose.yml
 .setup_complete
 config.json
+.db_init
