@@ -96,8 +96,7 @@ This can be used in conjunction with this example config.json file:
    "DB_PORT": 3306,
    "DB_USER": "root",
    "DB_PASSWORD": "iloveaidxnfun123",
-   "DB_NAME": "aidxnfun",
-   "PORT": 3000
+   "DB_NAME": "aidxnfun"
 }
 ```
 
