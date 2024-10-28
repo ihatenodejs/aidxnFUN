@@ -6,8 +6,6 @@ Built with Tailwind CSS, EJS, Express.js, and Node.js for a backend for it all.
 This is a more modern version of design.
 This project is released under the CC0-1.0 license. The code and content are in the public domain.
 
-This repo may be archived at times due to me not needing a new design or extra features.
-
 # Install and self-host
 Have a weird obsession? Want a pre-built site you can use for free? Host aidxnFUN!
 As the code is available under the CC0-1.0 license, which means you should feel free and encouraged to change content, design, whatever!
