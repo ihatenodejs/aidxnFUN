@@ -147,6 +147,7 @@ If the database just started, give it 30 or so seconds and issue `./manage resta
 - [X] Add database support
 - [X] Add view counter
 - [ ] Improve `manage` handling of waiting for database to start (switch from predefined number of seconds)
+- [ ] Update projects page to latest information
 
 # License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN?ref=badge_large)
