@@ -342,12 +342,6 @@ function setup() {
     read -n 1 -s -r -p ""
     clear
 
-    echo -e "${COLOR_BLUE}We will now proceed to copy configuration files automatically.${COLOR_RESET}"
-    echo -e "${COLOR_BLUE}You don't have to do anything but press any key.${COLOR_RESET}"
-    echo -e "\nPress any key to continue..."
-    read -n 1 -s -r -p ""
-    cp
-
     echo -e "This script requires Node.js, NPM, and Docker to be installed on your system."
     echo "Please ensure you have these tools installed before proceeding."
     echo -e "\nPress any key to continue with tool installation..."
