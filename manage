@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SC_VERSION=1.1.0
+SC_CODENAME="bionic"
 PORT=5566
 SETUP_FILE=".setup_complete"
 COLOR_RESET="\033[0m"
@@ -14,19 +16,11 @@ check_db() {
 }
 
 function install_docker() {
-    sudo apt-get install ca-certificates curl
-    sudo install -m 0755 -d /etc/apt/keyrings
-    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-    sudo chmod a+r /etc/apt/keyrings/docker.asc
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     sudo apt-get update
+    sudo apt-get install docker.io
     echo -e "\n${COLOR_GREEN}Docker installed successfully.${COLOR_RESET}"
-    echo -e "${COLOR_BLUE}Adding user to the Docker group...${COLOR_RESET}"
-    if [ ! -d "docker-compose.yml" ]; then
-        if [ ! -d "docker-compose.yml.example" ]; then
+    if [ ! -f "docker-compose.yml" ]; then
+        if [ ! -f "docker-compose.yml.example" ]; then
             echo "Couldn't find example Docker Compose file"
         else
             sudo cp docker-compose.yml.example docker-compose.yml
@@ -36,14 +30,25 @@ function install_docker() {
         echo -e "${COLOR_GREEN}Docker Compose file already exists, skipping.${COLOR_RESET}"
     fi
     echo -e "${COLOR_BLUE}Creating Docker network...${COLOR_RESET}"
-    sudo docker network create --subnet=10.5.0.0/16 aidxnfun-n
-    echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
-    sudo usermod -aG docker $USER
-    echo -e "${COLOR_GREEN}User added to Docker group. Please log out and back in for the changes to take effect.${COLOR_RESET}"
+    if ! sudo docker network inspect aidxnfun-n >/dev/null 2>&1; then
+        sudo docker network create --subnet=10.5.0.0/16 aidxnfun-n >/dev/null 2>&1
+        echo "${COLOR_GREEN}Created Docker network.${COLOR_RESET}"
+    else
+        echo "${COLOR_YELLOW}Docker network already exists.${COLOR_RESET}"
+    fi
 }
 
 function install_tools() {
-    if ! command -v node &> /dev/null; then
+    if ! command -v curl &> /dev/null 2>&1; then
+        echo -e "${COLOR_RED}curl is not installed. Installing now...${COLOR_RESET}"
+        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
+        sudo apt-get install curl
+        echo -e "\n${COLOR_GREEN}curl installed successfully.${COLOR_RESET}\n"
+    else
+        echo -e "${COLOR_GREEN}curl is installed.${COLOR_RESET}"
+    fi
+
+    if ! command -v node &> /dev/null 2>&1; then
         echo -e "${COLOR_RED}NodeJS is not installed. Installing now...${COLOR_RESET}"
         echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
@@ -55,32 +60,32 @@ function install_tools() {
         echo -e "${COLOR_GREEN}NodeJS is installed. Version: $(node -v)${COLOR_RESET}"
     fi
 
-    if ! command -h nc &> /dev/null; then
+    if ! command -v nc &> /dev/null 2>&1; then
         echo -e "${COLOR_RED}Netcat is not installed. Installing now...${COLOR_RESET}"
         echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
         sudo apt-get install netcat-traditional
         echo -e "\n${COLOR_GREEN}Netcat installed successfully.${COLOR_RESET}\n"
     else
-        echo -e "${COLOR_GREEN}Netcat is installed. Version: $(nc -h | grep -oP '\[v[0-9.]+\-[0-9]+\]' | tr -d '[]')${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Netcat is installed.${COLOR_RESET}"
     fi
 
-    if ! command -h docker &> /dev/null; then
+    if ! command -v docker &> /dev/null 2>&1; then
         echo -e "${COLOR_RED}Docker is not installed. Installing now...${COLOR_RESET}"
         echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
         install_docker
         echo -e "\n${COLOR_GREEN}Docker installed successfully.${COLOR_RESET}\n"
     else
-        echo -e "${COLOR_GREEN}Docker is installed. Version: $(nc -h | grep -oP '\[v[0-9.]+\-[0-9]+\]' | tr -d '[]')${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Docker is installed. Version: $(docker --version)${COLOR_RESET}"
     fi
 
-    if ! command -v npm &> /dev/null; then
+    if ! command -v npm &> /dev/null 2>&1; then
         echo -e "${COLOR_RED}NPM is not installed. Installing now...${COLOR_RESET}"
         echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
         sudo apt-get update
         sudo apt-get install npm
-        if [ ! -d "config.json" ]; then
+        if [ ! -f "config.json" ]; then
             echo -e "${COLOR_BLUE}Copying config file...${COLOR_RESET}"
-            if [ ! -d "config.json.example" ]; then
+            if [ ! -f "config.json.example" ]; then
                 echo "Couldn't find example config file"
             else
                 sudo cp config.json.example config.json
@@ -99,7 +104,7 @@ function install_tools() {
 }
 
 function show_help() {
-    echo -e "${COLOR_GREEN}manage version:${COLOR_RESET} ${COLOR_BLUE}1.0.0 bionic${COLOR_RESET}"
+    echo -e "${COLOR_GREEN}manage version:${COLOR_RESET} ${COLOR_BLUE}${SC_VERSION} ${SC_CODENAME}${COLOR_RESET}"
     echo -e "${COLOR_BLUE}Usage:${COLOR_RESET} ./manage [command] [options]\n"
     echo -e "${COLOR_YELLOW}Commands:${COLOR_RESET}"
     echo -e "  ${COLOR_CYAN}help, -h, --help${COLOR_RESET}      Shows this help message."
@@ -109,14 +114,6 @@ function show_help() {
     echo -e "  ${COLOR_CYAN}status, -s, --status${COLOR_RESET}  Checks if the server is running.\n"
     echo -e "${COLOR_YELLOW}Options:${COLOR_RESET}"
     echo -e "  ${COLOR_CYAN}--db-alive${COLOR_RESET}            Do not restart Docker services.\n"
-}
-
-function check_docker() {
-    if command -v docker &> /dev/null; then
-        echo -e "${COLOR_GREEN}Docker is installed. Version: $(docker --version)${COLOR_RESET}"
-    else
-        echo -e "${COLOR_RED}Docker is not installed.${COLOR_RESET}"
-    fi
 }
 
 function check_dirs() {
@@ -144,6 +141,7 @@ function check_dirs() {
             rm -rf "./public"
             deleted_count=$((deleted_count + 1))
         fi
+
         if [ "$deleted_count" -gt 0 ]; then
             echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
         else
@@ -335,7 +333,7 @@ function check_status() {
 
 function setup() {
     clear
-    echo -e "${COLOR_BLUE}Welcome to the aidxnFUNbeta 'manage' script setup!${COLOR_RESET}\n"
+    echo -e "${COLOR_BLUE}Welcome to the aidxnFUN 'manage' script setup!\n${COLOR_RESET}${COLOR_CYAN}You are running manage ${SC_VERSION} ${SC_CODENAME}${COLOR_RESET}\n"
     echo -e "${COLOR_GREEN}A custom script built by ihatenodejs${COLOR_RESET}"
     echo -e "${COLOR_YELLOW}and presented by forkers like you...${COLOR_RESET}"
     echo -e "\nPress any key to continue..."
@@ -347,15 +345,29 @@ function setup() {
     echo -e "\nPress any key to continue with tool installation..."
     read -n 1 -s -r -p ""
 
-    check_docker
+    clear
     install_tools
 
-    clear
-    echo -e "\n\n${COLOR_GREEN}Setup complete! Press any key to exit.${COLOR_RESET}\n"
-    echo -e "${COLOR_BLUE}You should disconnect your SSH session/logout, and reconnect/login for best results.${COLOR_RESET}"
-    echo -e "${COLOR_BLUE}Then, start the server with this command:${COLOR_RESET}"
-    echo -e "${COLOR_GREEN}#{COLOR_RESET} ./manage up\n"
+    echo -e "\n${COLOR_GREEN}Dependancy installation complete!${COLOR_RESET}"
+    echo -e "\n${COLOR_BLUE}If you would like to view the install logs, please do so, or click [ENTER] to continue to the next step.${COLOR_RESET}\n"
     read -n 1 -s -r -p ""
+    clear
+
+    echo -e "${COLOR_GREEN}Now, take a look at the commands you can use with this script:${COLOR_RESET}\n"
+    show_help
+    echo -e "\nPress any key to continue to the final step..."
+    read -n 1 -s -r -p ""
+    clear
+
+    echo -e "${COLOR_BLUE}Now, you should disconnect your SSH session or logout from your computer, and reconnect/login again for the best results.${COLOR_RESET}"
+    echo -e "\n${COLOR_BLUE}Then, start the server with this command:${COLOR_RESET}"
+    echo -e "${COLOR_GREEN}./manage up${COLOR_RESET}\n"
+    echo -e "\n${COLOR_BLUE}If you need help, or to get info about other commands, simply use:${COLOR_RESET}"
+    echo -e "${COLOR_GREEN}./manage help${COLOR_RESET}"
+    echo -e "\nPress any key to complete the setup and exit..."
+    read -n 1 -s -r -p ""
+    clear
+    echo -e "${COLOR_GREEN}Thank you for using manage ${SC_VERSION} ${SC_CODENAME}!${COLOR_RESET}\n"
     exit 0
 }
 
