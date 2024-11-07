@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SC_VERSION=1.1.0
+SC_VERSION=1.2.0
 SC_CODENAME="bionic"
 PORT=5566
 SETUP_FILE=".setup_complete"
@@ -11,43 +11,7 @@ COLOR_YELLOW="\033[1;33m"
 COLOR_BLUE="\033[1;34m"
 COLOR_CYAN="\033[1;36m"
 
-check_db() {
-    nc -z "$DB_HOST" "$DB_PORT"
-}
-
-function install_docker() {
-    sudo apt-get update
-    sudo apt-get install docker.io
-    echo -e "\n${COLOR_GREEN}Docker installed successfully.${COLOR_RESET}"
-    if [ ! -f "docker-compose.yml" ]; then
-        if [ ! -f "docker-compose.yml.example" ]; then
-            echo "Couldn't find example Docker Compose file"
-        else
-            sudo cp docker-compose.yml.example docker-compose.yml
-            echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
-        fi
-    else
-        echo -e "${COLOR_GREEN}Docker Compose file already exists, skipping.${COLOR_RESET}"
-    fi
-    echo -e "${COLOR_BLUE}Creating Docker network...${COLOR_RESET}"
-    if ! sudo docker network inspect aidxnfun-n >/dev/null 2>&1; then
-        sudo docker network create --subnet=10.5.0.0/16 aidxnfun-n >/dev/null 2>&1
-        echo "${COLOR_GREEN}Created Docker network.${COLOR_RESET}"
-    else
-        echo "${COLOR_YELLOW}Docker network already exists.${COLOR_RESET}"
-    fi
-}
-
 function install_tools() {
-    if ! command -v curl &> /dev/null 2>&1; then
-        echo -e "${COLOR_RED}curl is not installed. Installing now...${COLOR_RESET}"
-        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
-        sudo apt-get install curl
-        echo -e "\n${COLOR_GREEN}curl installed successfully.${COLOR_RESET}\n"
-    else
-        echo -e "${COLOR_GREEN}curl is installed.${COLOR_RESET}"
-    fi
-
     if ! command -v node &> /dev/null 2>&1; then
         echo -e "${COLOR_RED}NodeJS is not installed. Installing now...${COLOR_RESET}"
         echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
@@ -69,15 +33,6 @@ function install_tools() {
         echo -e "${COLOR_GREEN}Netcat is installed.${COLOR_RESET}"
     fi
 
-    if ! command -v docker &> /dev/null 2>&1; then
-        echo -e "${COLOR_RED}Docker is not installed. Installing now...${COLOR_RESET}"
-        echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
-        install_docker
-        echo -e "\n${COLOR_GREEN}Docker installed successfully.${COLOR_RESET}\n"
-    else
-        echo -e "${COLOR_GREEN}Docker is installed. Version: $(docker --version)${COLOR_RESET}"
-    fi
-
     if ! command -v npm &> /dev/null 2>&1; then
         echo -e "${COLOR_RED}NPM is not installed. Installing now...${COLOR_RESET}"
         echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
@@ -88,13 +43,13 @@ function install_tools() {
             if [ ! -f "config.json.example" ]; then
                 echo "Couldn't find example config file"
             else
-                sudo cp config.json.example config.json
+                cp config.json.example config.json
             fi
         else
             echo -e "${COLOR_GREEN}config file already exists, skipping.${COLOR_RESET}"
         fi
         echo -e "${COLOR_BLUE}Installing NPM deps...${COLOR_RESET}"
-        npm install > node.log 2>&1
+        npm install
         echo -e "\n${COLOR_GREEN}NPM installed successfully.${COLOR_RESET}\n"
         touch $SETUP_FILE
     else
@@ -112,8 +67,6 @@ function show_help() {
     echo -e "  ${COLOR_CYAN}down${COLOR_RESET}                  Stops the server."
     echo -e "  ${COLOR_CYAN}restart${COLOR_RESET}               Restarts the server."
     echo -e "  ${COLOR_CYAN}status, -s, --status${COLOR_RESET}  Checks if the server is running.\n"
-    echo -e "${COLOR_YELLOW}Options:${COLOR_RESET}"
-    echo -e "  ${COLOR_CYAN}--db-alive${COLOR_RESET}            Do not restart Docker services.\n"
 }
 
 function check_dirs() {
@@ -155,47 +108,31 @@ function check_dirs() {
 function restart_server() {
     check_setup
 
-    if [ "$DB_ALIVE" == "true" ]; then
-        echo -e "${COLOR_YELLOW}Database services will not be restarted. Skipping Docker operations.${COLOR_RESET}"
-    else
-        if [ -d './public' ]; then
-            echo -e "${COLOR_BLUE}Deleting public directories...${COLOR_RESET}"
-            check_dirs "delete"
-        fi
+    if [ -d './public' ]; then
+        echo -e "${COLOR_BLUE}Deleting public directories...${COLOR_RESET}"
+        check_dirs "delete"
+    fi
 
-        if [ -f './src/css/main.css' ]; then
-            echo -e "${COLOR_BLUE}Deleting old Tailwind CSS...${COLOR_RESET}"
-            rm ./src/css/main.css
-            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
-        fi
-
-        PIDS=$(lsof -t -i:$PORT)
-
-        if [ -n "$PIDS" ]; then
-            echo -e "${COLOR_BLUE}Stopping server...${COLOR_RESET}"
-            for PID in $PIDS; do
-                kill "$PID" || echo -e "${COLOR_RED}Failed to kill PID: $PID${COLOR_RESET}"
-            done
-            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
-        else
-            echo -e "${COLOR_YELLOW}No process found on port $PORT.${COLOR_RESET}"
-        fi
-
-        echo -e "${COLOR_BLUE}Stopping database...${COLOR_RESET}"
-        echo "This may require your sudo password"
-        sudo docker compose down
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
-
-        echo -e "${COLOR_BLUE}Creating public directories...${COLOR_RESET}"
-        check_dirs "create"
-
-        echo -e "${COLOR_BLUE}Starting database...${COLOR_RESET}"
-        echo "This may require your sudo password"
-        sudo docker compose up -d
-        echo -e "${COLOR_BLUE}Waiting 30 seconds for database startup...${COLOR_RESET}"
-        sleep 30
+    if [ -f './src/css/main.css' ]; then
+        echo -e "${COLOR_BLUE}Deleting old Tailwind CSS...${COLOR_RESET}"
+        rm ./src/css/main.css
         echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
     fi
+
+    PIDS=$(lsof -t -i:$PORT)
+
+    if [ -n "$PIDS" ]; then
+        echo -e "${COLOR_BLUE}Stopping server...${COLOR_RESET}"
+        for PID in $PIDS; do
+            kill "$PID" || echo -e "${COLOR_RED}Failed to kill PID: $PID${COLOR_RESET}"
+        done
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+    else
+        echo -e "${COLOR_YELLOW}No process found on port $PORT.${COLOR_RESET}"
+    fi
+
+    echo -e "${COLOR_BLUE}Creating public directories...${COLOR_RESET}"
+    check_dirs "create"
 
     echo -e "${COLOR_BLUE}Building project...${COLOR_RESET}"
     if ! npm run build > node.log 2>&1; then
@@ -219,27 +156,23 @@ function restart_server() {
 
     echo -e "${COLOR_BLUE}Starting server...${COLOR_RESET}"
     npm start > node.log 2>&1 &
-    echo -e "${COLOR_GREEN}Done. Server up and running on port $PORT!${COLOR_RESET}"
+    sleep 1
+
+    PIDS=$(lsof -t -i:$PORT)
+    if [ -n "$PIDS" ]; then
+        echo -e "${COLOR_GREEN}\nDone. Server up and running on port $PORT!\n${COLOR_RESET}"
+    else
+        echo -e "${COLOR_RED}Something went wrong... Check node.log for more details${COLOR_RESET} (no process on port)"
+    fi
 }
 
 function start_server() {
     check_setup
 
-    if [ "$DB_ALIVE" == "true" ]; then
-        echo -e "${COLOR_YELLOW}Database services will not be restarted. Skipping Docker operations.${COLOR_RESET}"
-    else
-        echo -e "${COLOR_BLUE}Starting database...${COLOR_RESET}"
-        echo "This may require your sudo password"
-        sudo docker compose up -d
-        echo -e "${COLOR_BLUE}Waiting 30 seconds for database startup...${COLOR_RESET}"
-        sleep 30
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
-    fi
-
     PID=$(lsof -t -i:$PORT)
 
     if [ -n "$PID" ]; then
-        echo -e "${COLOR_YELLOW}Server process already running on port $PORT. Skipping server start.${COLOR_RESET}"
+        echo -e "${COLOR_YELLOW}Server already running on port $PORT. Skipping server startup.${COLOR_RESET}"
         return
     fi
 
@@ -274,21 +207,19 @@ function start_server() {
 
     echo -e "${COLOR_BLUE}Starting server...${COLOR_RESET}"
     npm start > node.log 2>&1 &
-    echo -e "${COLOR_GREEN}Done. Server up and running on port $PORT!${COLOR_RESET}"
+    sleep 1
+
+    PIDS=$(lsof -t -i:$PORT)
+    if [ -n "$PIDS" ]; then
+        echo -e "${COLOR_GREEN}\nDone. Server up and running on port $PORT!\n${COLOR_RESET}"
+    else
+        echo -e "${COLOR_RED}Something went wrong... Check node.log for more details${COLOR_RESET} (no process on port)"
+    fi
 }
 
 function stop_server() {
     check_setup
     PID=$(lsof -t -i:$PORT)
-
-    if [ "$DB_ALIVE" == "true" ]; then
-        echo -e "${COLOR_YELLOW}Database services will not be stopped. Skipping Docker operations.${COLOR_RESET}"
-    else
-        echo -e "${COLOR_BLUE}Stopping database...${COLOR_RESET}"
-        echo "This may require your sudo password"
-        sudo docker compose down
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
-    fi
 
     if [ -d './public' ]; then
         echo -e "${COLOR_BLUE}Deleting public directories...${COLOR_RESET}"
@@ -340,12 +271,12 @@ function setup() {
     read -n 1 -s -r -p ""
     clear
 
-    echo -e "This script requires Node.js, NPM, and Docker to be installed on your system."
+    echo -e "This script requires Node.js, NPM, and Netcat to be installed on your system."
     echo "Please ensure you have these tools installed before proceeding."
     echo -e "\nPress any key to continue with tool installation..."
     read -n 1 -s -r -p ""
-
     clear
+
     install_tools
 
     echo -e "\n${COLOR_GREEN}Dependancy installation complete!${COLOR_RESET}"
@@ -359,8 +290,7 @@ function setup() {
     read -n 1 -s -r -p ""
     clear
 
-    echo -e "${COLOR_BLUE}Now, you should disconnect your SSH session or logout from your computer, and reconnect/login again for the best results.${COLOR_RESET}"
-    echo -e "\n${COLOR_BLUE}Then, start the server with this command:${COLOR_RESET}"
+    echo -e "${COLOR_BLUE}Now, you may start the server with this command:${COLOR_RESET}"
     echo -e "${COLOR_GREEN}./manage up${COLOR_RESET}\n"
     echo -e "\n${COLOR_BLUE}If you need help, or to get info about other commands, simply use:${COLOR_RESET}"
     echo -e "${COLOR_GREEN}./manage help${COLOR_RESET}"
@@ -376,19 +306,6 @@ function check_setup() {
         setup
     fi
 }
-
-DB_ALIVE="false"
-if [[ $# -eq 0 ]]; then
-    show_help
-    exit 0
-fi
-
-for arg in "$@"; do
-    if [[ "$arg" == "--db-alive" ]]; then
-        DB_ALIVE="true"
-        break
-    fi
-done
 
 case $1 in
     up)
