@@ -144,7 +144,7 @@ If the database just started, give it 30 or so seconds and issue `./manage resta
 # To-Do
 - [ ] Implement PGP message verification
 - [ ] Improve `manage` handling of waiting for database to start (switch from predefined number of seconds)
-- [ ] Add menu link to tilde website
+- [X] Add menu link to tilde website
 - [X] Add database support
 - [X] Add view counter
 - [X] Update projects page to latest information
