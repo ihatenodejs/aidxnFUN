@@ -14,7 +14,6 @@ async function testPing() {
     const urls = [
         'https://aidxn.fun/ping',
         'https://kantor.aidxn.fun/ping',
-        'https://api.aidxn.fun/ping'
     ];
 
     const pingResults = await Promise.all(
@@ -28,11 +27,6 @@ async function testPing() {
                 const status1 = document.getElementById("status1");
                 status1.textContent = `[ONLINE - ${time} ms]`
                 status1.className = 'text-green-500 font-bold';
-            }
-            if (url === 'https://api.aidxn.fun/ping') {
-                const api = document.getElementById("api");
-                api.textContent = `[ONLINE - ${time} ms]`
-                api.className = 'text-green-500 font-bold';
             }
             return { url, time };
         })
@@ -52,10 +46,6 @@ async function testPing() {
     if (fastestServer === 'https://kantor.aidxn.fun/ping') {
         oldText = status1.textContent;
         status1.textContent = oldText + ' [FASTEST]';
-    }
-    if (fastestServer === 'https://api.aidxn.fun/ping') {
-        oldText = api.textContent;
-        api.textContent = oldText + ' [FASTEST]';
     }
 }
 
