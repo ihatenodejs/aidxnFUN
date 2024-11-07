@@ -142,11 +142,12 @@ I highly suggest you take a peek at the `node.log` file's contents. It's in the 
 If the database just started, give it 30 or so seconds and issue `./manage restart --db-alive` to restart the server without touching the database. It's common to get into a Docker-and-Node restart loop (which are not in sync) which I'm fixing.
 
 # To-Do
+- [ ] Implement PGP message verification
+- [ ] Improve `manage` handling of waiting for database to start (switch from predefined number of seconds)
+- [ ] Add menu link to tilde website
 - [X] Add database support
 - [X] Add view counter
 - [X] Update projects page to latest information
-- [ ] Implement PGP message verification
-- [ ] Improve `manage` handling of waiting for database to start (switch from predefined number of seconds)
 
 # License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN?ref=badge_large)
