@@ -111,18 +111,6 @@ chmod +x manage
 ```
 After doing that, you are now ready to use the script.
 
-## Known issues and suggestions
-### Issue 1
-There is a known issue where Node.js will not wait for the database starts, before polling it.
-### Issue 1 Workaround
-I suggest doing the following commands to start your server
-```bash
-# if you haven't yet done this, run ./manage setup
-./manage up
-# once that command is finished (and waits the 30 seconds for database to come up)
-./manage restart --db-alive
-```
-
 ## `manage` usage
 `./manage [command] [options]`
 
