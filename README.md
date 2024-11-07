@@ -30,7 +30,24 @@ Please note the /status endpoint will be broken with the original servers as COR
    A server will now start on port :5566, and be accessible from your web browser at http://localhost:5566/. I highly suggest creating a NGINX reverse proxy for this, especially if you plan to point this to a domain.
 
 ## Windows
-Windows is currently not supported by aidxnFUN yet. I suggest you use WSL, and follow the Ubuntu instructions, or purchase a VPS.
+Windows support is still in the works, however it is possible to run aidxnFUN under Windows.
+
+1. Install NodeJS and NPM for Windows from [nodejs.org](https://nodejs.org/)
+2. Open a Node.js command prompt
+3. Clone the repo
+   ```bat
+   git clone https://github.com/ihatenodejs/aidxnFUN
+   cd aidxnFUN
+   ```
+4. Build the app
+   ```bat
+   npm run winbuild
+   ```
+5. Run the app on port 5566
+   You may use the `PORT` variable to set a custom port. While Windows tends to default to 3000, we will use 5566, which is the default for aidxnFUN on Linux.
+   ```bat
+   set PORT=5566 && node app.js
+   ```
 
 # How it works
 This website uses Node.js, Express.js for a server, EJS for templating, and Tailwind CSS for the frontend CSS.
