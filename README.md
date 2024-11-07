@@ -44,10 +44,10 @@ Windows support is still in the works, however it is possible to run aidxnFUN un
    npm run winbuild
    ```
 5. Run the app on port 5566
-   You may use the `PORT` variable to set a custom port. While Windows tends to default to 3000, we will use 5566, which is the default for aidxnFUN on Linux.
    ```bat
    set PORT=5566 && node app.js
    ```
+   You may use the `PORT` variable to set a custom port. While Windows tends to default to 3000, we will use 5566, which is the default for aidxnFUN on Linux.
 
 # How it works
 This website uses Node.js, Express.js for a server, EJS for templating, and Tailwind CSS for the frontend CSS.
