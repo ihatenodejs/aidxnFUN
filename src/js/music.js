@@ -13,12 +13,12 @@ async function getLatestSong() {
         if (lsResponse.ok) {
             const latestSongJSON = await lsResponse.json();
             if (!latestSongJSON.track["@attr"]) {
-                albumlabel.textContent = "Last Listen:";
+                albumlabel.textContent = "Last Listen";
             } else if (latestSongJSON.track["@attr"].nowplaying) {
-                albumlabel.textContent = "Now Playing:";
+                albumlabel.textContent = "Now Playing";
             } else {
                 console.warn("[WARN] Invalid now playing status.");
-                albumlabel.textContent = "Last Listen:";
+                albumlabel.textContent = "Last Listen";
             }
 
             albumart.src = latestSongJSON.track.image[1]["#text"] || "/img/placeholder.png";
