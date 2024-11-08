@@ -156,7 +156,7 @@ function restart_server() {
 
     echo -e "${COLOR_BLUE}Starting server...${COLOR_RESET}"
     npm start > node.log 2>&1 &
-    sleep 1
+    sleep 2
 
     PIDS=$(lsof -t -i:$PORT)
     if [ -n "$PIDS" ]; then
