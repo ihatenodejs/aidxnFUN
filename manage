@@ -292,6 +292,7 @@ function setup() {
     clear
 
     install_tools
+    npm install
 
     echo -e "\n${COLOR_GREEN}Dependancy installation complete!${COLOR_RESET}"
     echo -e "\n${COLOR_BLUE}If you would like to view the install logs, please do so, or click [ENTER] to continue to the next step.${COLOR_RESET}\n"
