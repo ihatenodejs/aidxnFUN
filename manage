@@ -60,7 +60,7 @@ function install_tools() {
 
 function show_help() {
     echo -e "${COLOR_GREEN}manage version:${COLOR_RESET} ${COLOR_BLUE}${SC_VERSION} ${SC_CODENAME}${COLOR_RESET}"
-    echo -e "${COLOR_BLUE}Usage:${COLOR_RESET} ./manage [command] [options]\n"
+    echo -e "${COLOR_BLUE}Usage:${COLOR_RESET} ./manage [command]\n"
     echo -e "${COLOR_YELLOW}Commands:${COLOR_RESET}"
     echo -e "  ${COLOR_CYAN}help, -h, --help${COLOR_RESET}      Shows this help message."
     echo -e "  ${COLOR_CYAN}up${COLOR_RESET}                    Builds the project and starts the server."
@@ -347,7 +347,7 @@ case $1 in
         ;;
     *)
         check_setup
-        echo -e "${COLOR_RED}Invalid command: $1${COLOR_RESET}"
+        echo -e "${COLOR_RED}Invalid command: $1\n${COLOR_RESET}"
         show_help
         ;;
 esac
