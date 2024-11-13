@@ -29,7 +29,7 @@ During this process, `node` (20.08.0), `npm`, and `netcat` will be installed. If
    A server will now start on port :5566, and be accessible from your web browser at http://localhost:5566/. I highly suggest creating a NGINX reverse proxy for this, especially if you plan to point this to a domain.
 
 ## Windows
-Windows support is still in the works, however it is possible to run aidxnFUN under Windows.
+Windows-based hosts are only partially supported. I have no plans to write a script for Windows as of now, though that may change in the future, based on demand. However, `package.json` have bundled scripts to allow hosting on Windows. If you plan to host this website, I **STRONGLY** recommend that you use Linux.
 
 1. Install NodeJS and NPM for Windows from [nodejs.org](https://nodejs.org/)
 2. Open a Node.js command prompt
@@ -84,8 +84,9 @@ After doing that, you are now ready to use the script.
 I highly suggest you take a peek at the `node.log` file's contents. It's in the same directory as the `manage` script. This file contains the NodeJS server logs, which can be very helpful for debugging and/or troubleshooting.
 
 # To-Do
-- [ ] Implement PGP message verification
-- [ ] Create `manage` script for Windows
+- [ ] Add link to pontus.aidxn.fun in menu
+- [ ] Restructure menu with dropdowns
+- [X] Implement PGP message verification
 - [X] Add menu link to tilde website
 - [X] Update projects page to latest information
 
