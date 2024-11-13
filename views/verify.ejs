@@ -22,9 +22,18 @@
     <h3 class="text-2xl font-bold mb-4 text-white">Introduction</h3>
     <p class="text-slate-300 mb-4">Did I send you a PGP signed message? Let's check it's actually from me! The form below will verify the message was signed by my key.</p>
     <p class="text-slate-300 mb-4"><span class="font-bold">Remember</span>, if you have confirmed my key in person, you should always trust that key over this page.</p>
-    <p class="text-slate-300 mb-4">The key this is being checked against is stored on my server, which can be prone to being hacked. Thus, this is better than nothing, but not the #1 option for verifying a message.</p>
+    <p class="text-slate-300 mb-4">The key this is being checked against is stored on my server, which can be prone to being hacked. Thus, this is better than nothing, but not the #1 option for verifying a message. As of now, messages are checked by the server, not locally.</p>
     <h3 class="text-2xl font-bold mb-4 text-white">Check Message</h3>
-    <p class="text-slate-300 font-bold">THIS FORM IS NOT CURRENTLY AVAILABLE</p>
+    <form action="/verify" method="POST" class="space-y-4">
+        <label for="pgpMessage" class="block text-slate-300">PGP Message:</label>
+        <textarea id="pgpMessage" name="pgpMessage" class="w-full p-2 bg-slate-800 text-slate-300 rounded-md" rows="10" placeholder="Paste a PGP-signed message here"></textarea>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Verify</button>
+    </form>
+    <% if (verifyResult) { %>
+        <div class="mt-4 p-4 rounded bg-slate-800 text-white">
+            <p><%= verifyResult %></p>
+        </div>
+    <% } %>
 </div>
 <script src="js/main.js"></script>
 <%- include('shards/footer.ejs') %>
