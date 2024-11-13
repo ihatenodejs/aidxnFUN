@@ -156,12 +156,19 @@ function restart_server() {
 
     echo -e "${COLOR_BLUE}Starting server...${COLOR_RESET}"
     npm start > node.log 2>&1 &
-    sleep 2
+    
+    for i in {1..10}; do
+        PIDS=$(lsof -t -i:$PORT)
+        if [ -n "$PIDS" ]; then
+            echo -e "${COLOR_GREEN}\nDone. Server up and running on port $PORT!\n${COLOR_RESET}"
+            break
+        else
+            echo -e "${COLOR_YELLOW}Waiting for server to start on port $PORT...${COLOR_RESET}"
+            sleep 1
+        fi
+    done
 
-    PIDS=$(lsof -t -i:$PORT)
-    if [ -n "$PIDS" ]; then
-        echo -e "${COLOR_GREEN}\nDone. Server up and running on port $PORT!\n${COLOR_RESET}"
-    else
+    if [ -z "$PIDS" ]; then
         echo -e "${COLOR_RED}Something went wrong... Check node.log for more details${COLOR_RESET} (no process on port)"
     fi
 }
@@ -207,12 +214,19 @@ function start_server() {
 
     echo -e "${COLOR_BLUE}Starting server...${COLOR_RESET}"
     npm start > node.log 2>&1 &
-    sleep 1
+    
+    for i in {1..10}; do
+        PIDS=$(lsof -t -i:$PORT)
+        if [ -n "$PIDS" ]; then
+            echo -e "${COLOR_GREEN}\nDone. Server up and running on port $PORT!\n${COLOR_RESET}"
+            break
+        else
+            echo -e "${COLOR_YELLOW}Waiting for server to start on port $PORT...${COLOR_RESET}"
+            sleep 1
+        fi
+    done
 
-    PIDS=$(lsof -t -i:$PORT)
-    if [ -n "$PIDS" ]; then
-        echo -e "${COLOR_GREEN}\nDone. Server up and running on port $PORT!\n${COLOR_RESET}"
-    else
+    if [ -z "$PIDS" ]; then
         echo -e "${COLOR_RED}Something went wrong... Check node.log for more details${COLOR_RESET} (no process on port)"
     fi
 }
