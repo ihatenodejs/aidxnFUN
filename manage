@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SC_VERSION=1.2.0
+SC_VERSION=1.2.1
 SC_CODENAME="bionic"
 PORT=5566
 SETUP_FILE=".setup_complete"
@@ -75,7 +75,7 @@ function check_dirs() {
     local deleted_count=0
 
     if [ "$action" == "create" ]; then
-        for dir in "./public" "./public/js" "./public/css" "./src" "./src/css" "./src/img" "./src/js"; do
+        for dir in "./public" "./public/js" "./public/css" "./public/pgp" "./src" "./src/css" "./src/img" "./src/js" "./src/pgp"; do
             if [ ! -d "$dir" ]; then
                 echo -e "${COLOR_BLUE}Creating $dir...${COLOR_RESET}"
                 mkdir -p "$dir"
