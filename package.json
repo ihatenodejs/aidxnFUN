@@ -6,17 +6,15 @@
     "build:css:linux": "npx tailwindcss -i ./src/css/base.css -o ./src/css/main.css && cp -r ./src/css ./public/",
     "build:js:linux": "cp -r ./src/js ./public/",
     "build:img:linux": "cp -r ./src/img ./public/",
-    
+    "build:pgp:linux": "cp -r ./src/pgp ./public/",
     "build:css:win": "npx tailwindcss -i ./src/css/base.css -o ./src/css/main.css && xcopy /E /I /Y \"./src/css\" \"./public/css\"",
     "build:js:win": "xcopy /E /I /Y \"./src/js\" \"./public/js\"",
     "build:img:win": "xcopy /E /I /Y \"./src/img\" \"./public/img\"",
-
-    "build:linux": "npm run build:css:linux && npm run build:js:linux && npm run build:img:linux",
-    "build:win": "npm run build:css:win && npm run build:js:win && npm run build:img:win",
-    
+    "build:pgp:win": "xcopy /E /I /Y \"./src/pgp\" \"./public/pgp\"",
+    "build:linux": "npm run build:css:linux && npm run build:js:linux && npm run build:img:linux && npm run build:pgp:linux",
+    "build:win": "npm run build:css:win && npm run build:js:win && npm run build:img:win && npm run build:pgp:win",
     "build": "npm run build:linux",
     "winbuild": "npm run build:win",
-    
     "start": "node app.js"
   },
   "private": true,
@@ -79,6 +77,7 @@
     "normalize-path": "^3.0.0",
     "object-assign": "^4.1.1",
     "object-hash": "^3.0.0",
+    "openpgp": "^6.0.0",
     "package-json-from-dist": "^1.0.1",
     "path-key": "^3.1.1",
     "path-parse": "^1.0.7",
