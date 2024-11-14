@@ -3,6 +3,8 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN?ref=badge_shield&issueType=license)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2Fihatenodejs%2FaidxnFUN?ref=badge_shield&issueType=security)
 
+<a href="https://512kb.club"><img src="https://512kb.club/assets/images/orange-team.svg" alt="a proud member of the orange team of 512KB club" /></a>
+
 The full code of my website, under the CC0-1.0 license (public domain). Built with Tailwind CSS, EJS, Express.js, and Node.js
 
 # Install and self-host
