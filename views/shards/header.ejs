@@ -11,7 +11,7 @@
             </svg>
             Do you prefer a retro design? Check out old.aidxn.fun!
         </p>
-        <a href="https://old.aidxn.fun" class="flex-none rounded-full bg-gray-900 px-3.5 py-1 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900">Go retro <span aria-hidden="true">&rarr;</span></a>
+        <a href="https://old.aidxn.fun" class="flex-none rounded-full bg-gray-900 px-3.5 py-1 text-sm font-semibold text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-700">Go retro <span aria-hidden="true">&rarr;</span></a>
     </div>
     <div class="flex flex-1 justify-end">
         <button type="button" id="dismiss-btn" class="-m-3 p-3 focus-visible:outline-offset-[-4px]">
@@ -38,11 +38,23 @@
                 </svg>
             </button>
         </div>
-        <div class="hidden lg:flex lg:gap-x-12">
+        <div class="hidden lg:flex lg:gap-x-12 items-center">
             <a href="/" class="text-sm font-semibold leading-6 text-slate-200">Home</a>
             <a href="/about" class="text-sm font-semibold leading-6 text-slate-200">About</a>
-            <a href="https://p0ntus.com" class="text-sm font-semibold leading-6 text-slate-200">Archives</a>
-            <a href="https://tilde.club/~lxu" class="text-sm font-semibold leading-6 text-slate-200">Tilde</a>
+            <div class="relative inline-block text-left">
+                <a href="#" class="text-sm font-semibold leading-6 text-slate-200 flex items-center" id="menu-button" aria-expanded="false" aria-haspopup="true">
+                    Menu
+                    <svg class="ml-1 h-5 w-5 text-slate-200" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+                <div class="absolute right-0 z-10 w-56 origin-top-right rounded-md bg-gray-800 shadow-lg ring-1 ring-gray-700 focus:outline-none hidden" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                    <div class="py-1" role="none">
+                        <a href="https://tilde.club/~lxu" class="block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="menu-item-0">Tilde</a>
+                        <a href="https://p0ntus.com" class="block px-4 py-2 text-sm text-gray-100 hover:bg-gray-700" role="menuitem" tabindex="-1" id="menu-item-1">Archive</a>
+                    </div>
+                </div>
+            </div>
             <a href="/contact" class="text-sm font-semibold leading-6 text-slate-200">Contact</a>
             <a href="/verify" class="text-sm font-semibold leading-6 text-slate-200">Verify Message</a>
             <a href="/status" class="text-sm font-semibold leading-6 text-slate-200">Status</a>
@@ -67,14 +79,14 @@
             <div class="mt-6 flow-root">
                 <div class="-my-6 divide-y divide-gray-500/10">
                     <div class="space-y-2 py-6">
-                        <a href="/" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">Home</a>
-                        <a href="/about" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">About</a>
-                        <a href="https://p0ntus.com" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">Archives</a>
-                        <a href="https://tilde.club/~lxu" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">Tilde</a>
-                        <a href="/contact" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">Contact</a>
-                        <a href="/verify" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">Verify Message</a>
-                        <a href="/status" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">Status</a>
-                        <a href="/projects" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-50">Projects</a>
+                        <a href="/" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-900">Home</a>
+                        <a href="/about" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-900">About</a>
+                        <a href="https://tilde.club/~lxu" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-900">Tilde</a>
+                        <a href="https://p0ntus.com" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-900">Archive</a>
+                        <a href="/contact" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-900">Contact</a>
+                        <a href="/verify" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-900">Verify Message</a>
+                        <a href="/status" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-900">Status</a>
+                        <a href="/projects" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-200 hover:bg-gray-900">Projects</a>
                     </div>
                 </div>
             </div>
