@@ -86,8 +86,9 @@ After doing that, you are now ready to use the script.
 I highly suggest you take a peek at the `node.log` file's contents. It's in the same directory as the `manage` script. This file contains the NodeJS server logs, which can be very helpful for debugging and/or troubleshooting.
 
 # To-Do
-- [ ] Add link to pontus.aidxn.fun in menu
-- [ ] Restructure menu with dropdowns
+- [ ] Improve dropdown menu style
+- [X] Add link to pontus.aidxn.fun in menu
+- [X] Restructure menu with dropdowns
 - [X] Implement PGP message verification
 - [X] Add menu link to tilde website
 - [X] Update projects page to latest information
