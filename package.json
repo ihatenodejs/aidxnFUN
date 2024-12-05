@@ -65,7 +65,7 @@
     "jackspeak": "^3.4.3",
     "jiti": "^1.21.6",
     "lilconfig": "^2.1.0",
-    "lines-and-columns": "^1.2.4",
+    "lines-and-columns": "^2.0.4",
     "lru-cache": "^10.4.3",
     "merge2": "^1.4.1",
     "micromatch": "^4.0.8",
