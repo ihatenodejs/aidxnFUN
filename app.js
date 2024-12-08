@@ -23,6 +23,10 @@ app.get('/verify', (req, res) => {
     res.render('verify', { req, verifyResult: null });
 });
 
+app.get('/manifesto', (req, res) => {
+    res.render('manifesto', { req, verifyResult: null });
+});
+
 app.post('/verify', async (req, res) => {
     const { pgpMessage } = req.body;
 
