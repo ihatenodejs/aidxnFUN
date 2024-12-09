@@ -88,7 +88,7 @@
     "pirates": "^4.0.6",
     "postcss-import": "^15.1.0",
     "postcss-js": "^4.0.1",
-    "postcss-load-config": "^4.0.2",
+    "postcss-load-config": "^6.0.1",
     "postcss-nested": "^7.0.2",
     "postcss-selector-parser": "^6.1.2",
     "postcss-value-parser": "^4.2.0",
