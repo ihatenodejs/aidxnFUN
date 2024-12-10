@@ -21,11 +21,11 @@ async function testPing() {
             const time = await ping(url);
             if (url === 'https://aidxn.fun/ping') {
                 const website = document.getElementById("website");
-                website.textContent = `[ONLINE - ${time} ms]`
+                website.textContent = `[ONLINE - ${time} ms]`;
             }
             if (url === 'https://kantor.aidxn.fun/ping') {
                 const status1 = document.getElementById("status1");
-                status1.textContent = `[ONLINE - ${time} ms]`
+                status1.textContent = `[ONLINE - ${time} ms]`;
                 status1.className = 'text-green-500 font-bold';
             }
             return { url, time };
