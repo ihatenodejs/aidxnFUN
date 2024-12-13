@@ -73,7 +73,7 @@
     "minipass": "^7.1.2",
     "mysql2": "^3.11.3",
     "mz": "^2.7.0",
-    "nanoid": "^3.3.7",
+    "nanoid": "^5.0.9",
     "normalize-path": "^3.0.0",
     "object-assign": "^4.1.1",
     "object-hash": "^3.0.0",
