@@ -47,6 +47,9 @@ async function testPing() {
         oldText = status1.textContent;
         status1.textContent = oldText + ' [FASTEST]';
     }
+
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('content').classList.remove('hidden');
 }
 
 window.onload = () => {
