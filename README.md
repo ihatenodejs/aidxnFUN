@@ -15,7 +15,7 @@ During this process, `node` (20.08.0), `npm`, and `netcat` will be installed. If
 
 **Please note:** The /status endpoint will be broken with default servers (ones I own) as CORS will block requests not made from aidxn.fun
 
-## Debian/Ubuntu/Other Debian-based systems
+## Debian-based distributions (Ubuntu, etc.)
 1. Clone the repo
    ```bash
    git clone https://github.com/ihatenodejs/aidxnFUN
@@ -30,9 +30,10 @@ During this process, `node` (20.08.0), `npm`, and `netcat` will be installed. If
    ./manage up
    ```
    A server will now start on port :5566, and be accessible from your web browser at http://localhost:5566/. I highly suggest creating a NGINX reverse proxy for this, especially if you plan to point this to a domain.
-
 ## Windows
 Windows-based hosts are only partially supported. I have no plans to write a script for Windows as of now, though that may change in the future, based on demand. However, `package.json` have bundled scripts to allow hosting on Windows. If you plan to host this website, I **STRONGLY** recommend that you use Linux.
+
+**Windows hosting has not been tested in a while, and may not work perfectly.**
 
 1. Install NodeJS and NPM for Windows from [nodejs.org](https://nodejs.org/)
 2. Open a Node.js command prompt
@@ -87,7 +88,7 @@ After doing that, you are now ready to use the script.
 I highly suggest you take a peek at the `node.log` file's contents. It's in the same directory as the `manage` script. This file contains the NodeJS server logs, which can be very helpful for debugging and/or troubleshooting.
 
 # To-Do
-- [ ] Improve dropdown menu style
+- [X] Improve dropdown menu style
 - [X] Add link to pontus.aidxn.fun in menu
 - [X] Restructure menu with dropdowns
 - [X] Implement PGP message verification
