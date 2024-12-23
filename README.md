@@ -88,6 +88,8 @@ After doing that, you are now ready to use the script.
 I highly suggest you take a peek at the `node.log` file's contents. It's in the same directory as the `manage` script. This file contains the NodeJS server logs, which can be very helpful for debugging and/or troubleshooting.
 
 # To-Do
+- [ ] Fix spacing issues with footer (not the same size across pages)
+- [ ] Add status tracking for main server
 - [X] Improve dropdown menu style
 - [X] Add link to pontus.aidxn.fun in menu
 - [X] Restructure menu with dropdowns
