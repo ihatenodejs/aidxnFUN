@@ -137,6 +137,7 @@ config.json
 .db_init
 public/
 src/css/main.css
+.njs.provider
 
 # exclude idea folder
 .idea/
