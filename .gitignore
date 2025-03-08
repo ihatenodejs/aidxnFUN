@@ -140,3 +140,7 @@ src/css/main.css
 
 # exclude idea folder
 .idea/
+
+# bun
+bun.lock
+bun.lockb
