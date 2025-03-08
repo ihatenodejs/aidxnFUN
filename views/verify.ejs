@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gradient-to-br from-slate-900 to-black text-white font-afacad-flux">
+<body class="bg-linear-to-br from-slate-900 to-black text-white font-afacad-flux">
 <%- include('shards/header.ejs', { req: req }) %>
 
 <header class="flex flex-col items-center justify-center h-[40vh] p-6">
@@ -18,7 +18,7 @@
     <p class="text-lg text-gray-300 max-w-xl text-center mt-3">Let's check if that message really came from me!</p>
 </header>
 
-<div class="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-800 backdrop-blur-md shadow-xl rounded-2xl p-8 mx-4">
+<div class="bg-linear-to-br from-slate-800/80 to-slate-900/80 border border-slate-800 backdrop-blur-md shadow-xl rounded-2xl p-8 mx-4">
     <h3 class="text-2xl font-bold mb-4 text-white">Introduction</h3>
     <p class="text-slate-300 mb-4">Did I send you a PGP signed message? Let's check it's actually from me! The form below will verify the message was signed by my key.</p>
     <p class="text-slate-300 mb-4"><span class="font-bold">Remember</span>, if you have confirmed my key in person, you should always trust that key over this page.</p>
@@ -27,10 +27,10 @@
     <form action="/verify" method="POST" class="space-y-4">
         <label for="pgpMessage" class="block text-slate-300">PGP Message:</label>
         <textarea id="pgpMessage" name="pgpMessage" class="w-full p-2 bg-slate-800 text-slate-300 rounded-md" rows="10" placeholder="Paste a PGP-signed message here"></textarea>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Verify</button>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-sm">Verify</button>
     </form>
     <% if (verifyResult) { %>
-        <div class="mt-4 p-4 rounded bg-slate-800 text-white">
+        <div class="mt-4 p-4 rounded-sm bg-slate-800 text-white">
             <p><%= verifyResult %></p>
         </div>
     <% } %>
