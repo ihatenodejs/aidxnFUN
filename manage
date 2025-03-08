@@ -11,6 +11,7 @@ COLOR_YELLOW="\033[1;33m"
 COLOR_BLUE="\033[1;34m"
 COLOR_CYAN="\033[1;36m"
 DISTRO=$(grep '^NAME=' /etc/os-release | cut -d '=' -f2 | tr -d '"')
+NOB="inactive"
 
 function command_exists() {
     command -v "$1" &> /dev/null
@@ -18,17 +19,18 @@ function command_exists() {
 
 function install_tools() {
     # Perform updates
+    echo -e "${COLOR_BLUE}Updating package lists...${COLOR_RESET}"
     if [ "$DISTRO" == "Ubuntu" ]; then
-        echo -e "${COLOR_BLUE}Updating package lists...${COLOR_RESET}"
         # shellcheck disable=SC2024
         sudo apt-get update >> install.log
         echo -e "${COLOR_GREEN}Done.${COLOR_RESET}\n"
     elif [ "$DISTRO" == "Arch Linux" ]; then
-        echo -e "${COLOR_BLUE}Updating package lists...${COLOR_RESET}"
         # shellcheck disable=SC2024
         sudo pacman -Sy >> install.log
         echo -e "${COLOR_GREEN}Done.${COLOR_RESET}\n"
     fi
+
+    echo -e "${COLOR_BLUE}Starting system dependency install...${COLOR_RESET}"
 
     # Check for curl, and install if not found
     if ! command_exists curl; then
@@ -45,19 +47,61 @@ function install_tools() {
         echo -e "${COLOR_GREEN}curl is installed.${COLOR_RESET}"
     fi
 
-    # Check for NodeJS, and install if not found
-    if ! command_exists node; then
-        echo -e "${COLOR_RED}NodeJS is not installed. Installing now...${COLOR_RESET}"
-        curl -o .install.sh https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh >> install.log
-        chmod +x .install.sh
-        bash .install.sh >> install.log
-        rm .install.sh # cleanup
-        # shellcheck disable=SC2155
-        export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        nvm install 23 >> install.log
-        echo -e "\n${COLOR_GREEN}NodeJS installed successfully.${COLOR_RESET}\n"
-    else
+    # Check for NodeJS/Bun and install if not found
+    if ! command_exists node && ! command_exists bun; then
+        for i in {1..3}; do
+            echo -e "${COLOR_BLUE}Do you want to install and use Node.js or Bun? (node/bun)${COLOR_RESET}"
+            read -r -p "" NOB
+            if [ "$NOB" == "node" ]; then
+                curl -o .install.sh https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh >> install.log
+                chmod +x .install.sh
+                bash .install.sh >> install.log
+                rm .install.sh # cleanup
+                # shellcheck disable=SC2155
+                export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+                [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                nvm install 23 >> install.log
+                echo -e "\n${COLOR_GREEN}NodeJS installed successfully.${COLOR_RESET}\n"
+                NOB="node_installed"
+
+                if ! command_exists npm; then
+                    echo -e "${COLOR_RED}NPM is not installed. Installing now...${COLOR_RESET}"
+                    if [ "$DISTRO" == "Ubuntu" ]; then
+                        # shellcheck disable=SC2024
+                        sudo apt-get install npm -y >> install.log
+                    elif [ "$DISTRO" == "Arch Linux" ]; then
+                        # shellcheck disable=SC2024
+                        sudo pacman -S --noconfirm npm >> install.log
+                    fi
+                    echo -e "\n${COLOR_GREEN}NPM installed successfully.${COLOR_RESET}\n"
+                else
+                    echo -e "${COLOR_GREEN}NPM is installed. Version: $(npm -v)${COLOR_RESET}"
+                fi
+                break
+            elif [ "$NOB" == "bun" ]; then
+                curl -fsSL --output .install.sh https://bun.sh/install >> install.log
+                chmod +x .install.sh
+                bash .install.sh >> install.log
+                rm .install.sh # cleanup
+                # this puts bun in the path for the initial install, we later instruct the user to add it to their shell profile
+                export BUN_INSTALL="$HOME/.bun"
+                export PATH="$BUN_INSTALL/bin:$PATH"
+                echo -e "\n${COLOR_GREEN}Bun installed successfully.${COLOR_RESET}\n"
+                NOB="bun_installed"
+                break
+            else
+                echo -e "${COLOR_RED}Invalid option, please enter 'node' or 'bun'${COLOR_RESET}"
+            fi
+        done
+
+        if [ "$NOB" != "node_installed" ] && [ "$NOB" != "bun_installed" ]; then
+            # this is mainly intended to catch the case where the user doesn't enter anything 3+ times
+            echo -e "${COLOR_RED}[!] Failed to install, exiting.${COLOR_RESET}"
+            exit 1
+        fi
+    elif command_exists bun; then
+        echo -e "${COLOR_GREEN}NodeJS is installed (provided through Bun). Version: $(bun -v)${COLOR_RESET}"
+    elif command_exists node; then
         echo -e "${COLOR_GREEN}NodeJS is installed. Version: $(node -v)${COLOR_RESET}"
     fi
 
@@ -85,34 +129,20 @@ function install_tools() {
     else
         echo -e "${COLOR_GREEN}lsof is installed.${COLOR_RESET}"
     fi
+}
 
-    # Check for NPM, and install if not found
-    if ! command_exists npm; then
-        echo -e "${COLOR_RED}NPM is not installed. Installing now...${COLOR_RESET}"
-        if [ "$DISTRO" == "Ubuntu" ]; then
-            # shellcheck disable=SC2024
-            sudo apt-get install npm -y >> install.log
-        elif [ "$DISTRO" == "Arch Linux" ]; then
-            # shellcheck disable=SC2024
-            sudo pacman -S --noconfirm npm >> install.log
-        fi
-        if [ ! -f "config.json" ]; then
-            echo -e "${COLOR_BLUE}Copying config file...${COLOR_RESET}"
-            if [ ! -f "config.json.example" ]; then
-                echo "${COLOR_RED}[!] Couldn't find example config file${COLOR_RESET}"
-            else
-                cp config.json.example config.json
-            fi
+# Checks if a config.json file exists
+function check_config() {
+    if [ ! -f "config.json" ]; then
+        echo -e "\n${COLOR_BLUE}Copying config file...${COLOR_RESET}"
+        if [ ! -f "config.json.example" ]; then
+            echo -e "${COLOR_RED}[!] Couldn't find example config file${COLOR_RESET}"
         else
-            echo -e "${COLOR_GREEN}config file already exists, skipping.${COLOR_RESET}"
+            cp config.json.example config.json
+            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
         fi
-        echo -e "${COLOR_BLUE}Installing NPM deps...${COLOR_RESET}"
-        npm install >> install.log
-        echo -e "\n${COLOR_GREEN}NPM installed successfully.${COLOR_RESET}\n"
-        touch $SETUP_FILE
     else
-        echo -e "${COLOR_GREEN}NPM is installed. Version: $(npm -v)${COLOR_RESET}"
-        touch $SETUP_FILE
+        echo -e "${COLOR_GREEN}Config file already exists, skipping.${COLOR_RESET}"
     fi
 }
 
@@ -370,7 +400,7 @@ function setup() {
     read -n 1 -s -r -p ""
     clear
 
-    echo -e "${COLOR_BLUE}This script requires Node.js, NPM, curl, lsof, and Netcat to be installed on your system.${COLOR_RESET}"
+    echo -e "${COLOR_BLUE}This script requires Node.js+NPM/Bun, curl, lsof, and Netcat to be installed on your system.${COLOR_RESET}"
     echo -e "${COLOR_BLUE}It will attempt to install all of the required dependencies, although this might not work every time.${COLOR_RESET}"
     echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}"
     echo -e "\nPress any key to continue with tool installation..."
@@ -380,24 +410,48 @@ function setup() {
     # Execute install tool script
     install_tools
 
-    # Install NPM dependencies
-    echo -e "\n${COLOR_BLUE}Installing NPM dependencies...${COLOR_RESET}"
-    npm install >> install.log
-    echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+    # Check if config file exists
+    check_config
 
-    echo -e "\n\n${COLOR_GREEN}Dependency installation complete!${COLOR_RESET}"
+    # Configure provider and install Node dependencies
+    if command_exists bun; then
+        echo -e "\n${COLOR_BLUE}Setting provider to Bun...${COLOR_RESET}"
+        echo "DO NOT EDIT THIS: bun" > .njs.provider
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "\n${COLOR_BLUE}Installing dependencies with Bun...${COLOR_RESET}"
+        bun install >> install.log
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+    elif command_exists npm; then
+        echo -e "\n${COLOR_BLUE}Setting provider to Node/NPM...${COLOR_RESET}"
+        echo "DO NOT EDIT THIS: node" > .njs.provider
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "\n${COLOR_BLUE}Installing dependencies with NPM...${COLOR_RESET}"
+        npm install >> install.log
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+    else
+        echo -e "${COLOR_RED}NodeJS is somehow not installed, exiting.${COLOR_RESET}"
+        exit 1
+    fi
+
+    echo -e "\n${COLOR_GREEN}Dependency installation complete!${COLOR_RESET}"
     echo -e "${COLOR_BLUE}You can view the complete log of the installation process in the install.log file${COLOR_RESET}"
+    if [ "$NOB" == "bun_installed" ]; then
+        echo -e "\n${COLOR_RED}Make sure to add this to your shell profile (most likely ~/.bashrc):${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}export BUN_INSTALL=\"$HOME/.bun\"${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}export PATH=\"\$BUN_INSTALL/bin:\$PATH\"${COLOR_RESET}"
+    fi
     echo -e "\nPress [ENTER] to continue to the next step."
     read -n 1 -s -r -p ""
     clear
 
-    echo -e "${COLOR_GREEN}Now, take a look at the commands you can use with this script:${COLOR_RESET}\n"
+    echo -e "${COLOR_GREEN}Take a look at the tasks you can perform automatically with manage:${COLOR_RESET}\n"
     # Show the user help message
     show_help
     echo -e "\nPress any key to continue to the final step..."
     read -n 1 -s -r -p ""
     clear
 
+    # Quick commands
     echo -e "${COLOR_BLUE}Now, you may start the server with this command:${COLOR_RESET}"
     echo -e "${COLOR_GREEN}./manage up${COLOR_RESET}\n"
     echo -e "\n${COLOR_BLUE}If you need help, or to get info about other commands, simply use:${COLOR_RESET}"
@@ -406,6 +460,7 @@ function setup() {
     read -n 1 -s -r -p ""
     clear
     echo -e "${COLOR_GREEN}Thank you for using manage ${SC_VERSION} ${SC_CODENAME}!${COLOR_RESET}\n"
+    touch $SETUP_FILE
     exit 0
 }
 
