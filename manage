@@ -148,7 +148,7 @@ function check_config() {
 
 # Show help message
 function show_help() {
-    echo -e "${COLOR_GREEN}manage version:${COLOR_RESET} ${COLOR_BLUE}${SC_VERSION} ${SC_CODENAME}${COLOR_RESET}"
+    echo -e "${COLOR_GREEN}manage for aidxnFUN:${COLOR_RESET} ${COLOR_BLUE}v${SC_VERSION} (${SC_CODENAME})${COLOR_RESET}"
     echo -e "${COLOR_BLUE}Usage:${COLOR_RESET} ./manage [command]\n"
     echo -e "${COLOR_YELLOW}Commands:${COLOR_RESET}"
     echo -e "  ${COLOR_CYAN}help, -h, --help${COLOR_RESET}      Shows this help message."
@@ -405,10 +405,12 @@ function check_status() {
     check_setup
     PID=$(lsof -t -i:$PORT)
 
+    echo -e "${COLOR_GREEN}manage for aidxnFUN:${COLOR_RESET} ${COLOR_BLUE}v${SC_VERSION} (${SC_CODENAME})${COLOR_RESET}"
+
     if [ -n "$PID" ]; then
-        echo -e "${COLOR_GREEN}Server running with PID: $PID${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}[SERVER]${COLOR_RESET} Running with PID: $PID"
     else
-        echo -e "${COLOR_RED}Server not running.${COLOR_RESET}"
+        echo -e "${COLOR_RED}[SERVER]${COLOR_RESET} Down${COLOR_RESET}"
     fi
 }
 
