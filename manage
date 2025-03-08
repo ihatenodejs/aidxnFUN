@@ -34,8 +34,10 @@ function install_tools() {
     if ! command_exists curl; then
         echo -e "${COLOR_RED}curl is not installed. Installing now...${COLOR_RESET}"
         if [ "$DISTRO" == "Ubuntu" ]; then
+            # shellcheck disable=SC2024
             sudo apt-get install curl -y >> install.log
         elif [ "$DISTRO" == "Arch Linux" ]; then
+            # shellcheck disable=SC2024
             sudo pacman -S --noconfirm curl >> install.log
         fi
         echo -e "\n${COLOR_GREEN}curl installed successfully.${COLOR_RESET}\n"
@@ -63,8 +65,10 @@ function install_tools() {
     if ! command_exists nc; then
         echo -e "${COLOR_RED}Netcat is not installed. Installing now...${COLOR_RESET}"
         if [ "$DISTRO" == "Ubuntu" ]; then
+            # shellcheck disable=SC2024
             sudo apt-get install netcat-traditional -y >> install.log
         elif [ "$DISTRO" == "Arch Linux" ]; then
+            # shellcheck disable=SC2024
             sudo pacman -S --noconfirm netcat >> install.log
         fi
         echo -e "\n${COLOR_GREEN}Netcat installed successfully.${COLOR_RESET}\n"
@@ -75,6 +79,7 @@ function install_tools() {
     # Check for lsof, and install if not found
     if ! command_exists lsof && [ "$DISTRO" == "Arch Linux" ]; then
         echo -e "${COLOR_RED}lsof is not installed. Installing now...${COLOR_RESET}"
+        # shellcheck disable=SC2024
         sudo pacman -S --noconfirm lsof >> install.log
         echo -e "\n${COLOR_GREEN}lsof installed successfully.${COLOR_RESET}\n"
     else
@@ -85,8 +90,10 @@ function install_tools() {
     if ! command_exists npm; then
         echo -e "${COLOR_RED}NPM is not installed. Installing now...${COLOR_RESET}"
         if [ "$DISTRO" == "Ubuntu" ]; then
+            # shellcheck disable=SC2024
             sudo apt-get install npm -y >> install.log
         elif [ "$DISTRO" == "Arch Linux" ]; then
+            # shellcheck disable=SC2024
             sudo pacman -S --noconfirm npm >> install.log
         fi
         if [ ! -f "config.json" ]; then
