@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SC_VERSION=1.3.0
-SC_CODENAME="bionic"
+SC_VERSION=1.4.0
+SC_CODENAME="seahorse"
 PORT=5566
 SETUP_FILE=".setup_complete"
 COLOR_RESET="\033[0m"
@@ -10,12 +10,24 @@ COLOR_RED="\033[1;31m"
 COLOR_YELLOW="\033[1;33m"
 COLOR_BLUE="\033[1;34m"
 COLOR_CYAN="\033[1;36m"
+DISTRO=$(grep '^NAME=' /etc/os-release | cut -d '=' -f2 | tr -d '"')
 
 function command_exists() {
     command -v "$1" &> /dev/null
 }
 
 function install_tools() {
+    # Perform updates
+    if [ "$DISTRO" == "Ubuntu" ]; then
+        echo -e "${COLOR_BLUE}Updating package lists...${COLOR_RESET}"
+        sudo apt-get update
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+    elif [ "$DISTRO" == "Arch Linux" ]; then
+        echo -e "${COLOR_BLUE}Updating package lists...${COLOR_RESET}"
+        sudo pacman -Sy
+        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+    fi
+
     # Check for NodeJS, and install if not found
     if ! command_exists node; then
         echo -e "${COLOR_RED}NodeJS is not installed. Installing now...${COLOR_RESET}"
@@ -24,7 +36,7 @@ function install_tools() {
         # shellcheck disable=SC2155
         export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        nvm install 20.18.0
+        nvm install 23
         echo -e "\n${COLOR_GREEN}NodeJS installed successfully.${COLOR_RESET}\n"
     else
         echo -e "${COLOR_GREEN}NodeJS is installed. Version: $(node -v)${COLOR_RESET}"
@@ -34,7 +46,11 @@ function install_tools() {
     if ! command_exists nc; then
         echo -e "${COLOR_RED}Netcat is not installed. Installing now...${COLOR_RESET}"
         echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
-        sudo apt-get install netcat-traditional
+        if [ "$DISTRO" == "Ubuntu" ]; then
+            sudo apt-get install netcat-traditional -y
+        elif [ "$DISTRO" == "Arch Linux" ]; then
+            sudo pacman -S --noconfirm netcat
+        fi
         echo -e "\n${COLOR_GREEN}Netcat installed successfully.${COLOR_RESET}\n"
     else
         echo -e "${COLOR_GREEN}Netcat is installed.${COLOR_RESET}"
@@ -44,8 +60,11 @@ function install_tools() {
     if ! command_exists npm; then
         echo -e "${COLOR_RED}NPM is not installed. Installing now...${COLOR_RESET}"
         echo -e "${COLOR_YELLOW}You may need to enter your sudo password.${COLOR_RESET}\n"
-        sudo apt-get update
-        sudo apt-get install npm
+        if [ "$DISTRO" == "Ubuntu" ]; then
+            sudo apt-get install npm -y
+        elif [ "$DISTRO" == "Arch Linux" ]; then
+            sudo pacman -S --noconfirm npm
+        fi
         if [ ! -f "config.json" ]; then
             echo -e "${COLOR_BLUE}Copying config file...${COLOR_RESET}"
             if [ ! -f "config.json.example" ]; then
@@ -307,16 +326,21 @@ function check_status() {
 
 # Master setup function/process
 function setup() {
+    if [ "$DISTRO" != "Ubuntu" ] && [ "$DISTRO" != "Arch Linux" ]; then
+        echo -e "${COLOR_RED}This script is only supported on Ubuntu and Arch Linux${COLOR_RESET}"
+        exit 1
+    fi
+
     clear
-    echo -e "${COLOR_BLUE}Welcome to the aidxnFUN 'manage' script setup!\n${COLOR_RESET}${COLOR_CYAN}You are running manage ${SC_VERSION} ${SC_CODENAME}${COLOR_RESET}\n"
+    echo -e "${COLOR_BLUE}Welcome to the aidxnFUN 'manage' script setup!\n${COLOR_RESET}${COLOR_CYAN}You are running manage v${SC_VERSION} (${SC_CODENAME})${COLOR_RESET}\n"
     echo -e "${COLOR_GREEN}A custom script built by ihatenodejs${COLOR_RESET}"
     echo -e "${COLOR_YELLOW}and presented by forkers like you...${COLOR_RESET}"
     echo -e "\nPress any key to continue..."
     read -n 1 -s -r -p ""
     clear
 
-    echo -e "This script requires Node.js, NPM, and Netcat to be installed on your system."
-    echo "Please ensure you have these tools installed before proceeding."
+    echo -e "${COLOR_BLUE}This script requires Node.js, NPM, and Netcat to be installed on your system.${COLOR_RESET}"
+    echo -e "${COLOR_BLUE}It will attempt to install all of the required dependencies, although this might not work every time.${COLOR_RESET}"
     echo -e "\nPress any key to continue with tool installation..."
     read -n 1 -s -r -p ""
     clear
