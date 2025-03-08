@@ -23,11 +23,11 @@ function install_tools() {
     if [ "$DISTRO" == "Ubuntu" ]; then
         # shellcheck disable=SC2024
         sudo apt-get update >> install.log
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}\n"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}\n"
     elif [ "$DISTRO" == "Arch Linux" ]; then
         # shellcheck disable=SC2024
         sudo pacman -Sy >> install.log
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}\n"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}\n"
     fi
 
     echo -e "${COLOR_BLUE}Starting system dependency install...${COLOR_RESET}"
@@ -139,7 +139,7 @@ function check_config() {
             echo -e "${COLOR_RED}[!] Couldn't find example config file${COLOR_RESET}"
         else
             cp config.json.example config.json
-            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+            echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
         fi
     else
         echo -e "${COLOR_GREEN}Config file already exists, skipping.${COLOR_RESET}"
@@ -173,11 +173,10 @@ function check_dirs() {
             fi
         done
         if [ "$created_count" -gt 0 ]; then
-            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+            echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
         else
-            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+            echo -e "${COLOR_YELLOW}Done, nothing created.${COLOR_RESET}"
         fi
-
     elif [ "$action" == "delete" ]; then
         if [ -d "./public" ]; then
             echo -e "${COLOR_BLUE}Deleting public directory...${COLOR_RESET}"
@@ -186,9 +185,9 @@ function check_dirs() {
         fi
 
         if [ "$deleted_count" -gt 0 ]; then
-            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+            echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
         else
-            echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+            echo -e "${COLOR_YELLOW}Done, nothing deleted.${COLOR_RESET}"
         fi
     else
         echo -e "${COLOR_RED}Invalid action: $action. Use 'create' or 'delete'.${COLOR_RESET}"
@@ -200,14 +199,13 @@ function restart_server() {
     check_setup
 
     if [ -d './public' ]; then
-        echo -e "${COLOR_BLUE}Deleting public directories...${COLOR_RESET}"
         check_dirs "delete"
     fi
 
     if [ -f './src/css/main.css' ]; then
         echo -e "${COLOR_BLUE}Deleting old Tailwind CSS...${COLOR_RESET}"
         rm ./src/css/main.css
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     fi
 
     PIDS=$(lsof -t -i:$PORT)
@@ -215,38 +213,53 @@ function restart_server() {
     if [ -n "$PIDS" ]; then
         echo -e "${COLOR_BLUE}Stopping server...${COLOR_RESET}"
         for PID in $PIDS; do
-            kill "$PID" || echo -e "${COLOR_RED}Failed to kill PID: $PID${COLOR_RESET}"
+            kill "$PID" >> /dev/null || echo -e "${COLOR_RED}Failed to kill PID: $PID${COLOR_RESET}"
         done
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     else
         echo -e "${COLOR_YELLOW}No process found on port $PORT.${COLOR_RESET}"
     fi
 
-    echo -e "${COLOR_BLUE}Creating public directories...${COLOR_RESET}"
     check_dirs "create"
 
     echo -e "${COLOR_BLUE}Building project...${COLOR_RESET}"
-    if ! npm run build > node.log 2>&1; then
-        echo -e "${COLOR_RED}Build failed. Please check for errors above.${COLOR_RESET}"
-        exit 1
+    if command_exists bun && command_exists bunx; then
+        if ! bun run build:linux:bun > node.log 2>&1; then
+            echo -e "${COLOR_RED}Build failed. Please check for errors above.${COLOR_RESET}"
+            exit 1
+        else
+            echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
+        fi
+    elif command_exists npm; then
+        if ! npm run build:linux:npm > node.log 2>&1; then
+            echo -e "${COLOR_RED}Build failed. Please check for errors above.${COLOR_RESET}"
+            exit 1
+        else
+            echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
+        fi
     else
-        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
+        echo -e "${COLOR_RED}NodeJS is somehow not installed, exiting.${COLOR_RESET}"
+        exit 1
     fi
 
     if [ -f './public/css/base.css' ]; then
         echo -e "${COLOR_BLUE}Cleaning up base Tailwind CSS file...${COLOR_RESET}"
         rm ./public/css/base.css
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     fi
 
     if [ -f './node.log' ]; then
         echo -e "${COLOR_BLUE}Deleting node log...${COLOR_RESET}"
         rm ./node.log
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     fi
 
     echo -e "${COLOR_BLUE}Starting server...${COLOR_RESET}"
-    npm start > node.log 2>&1 &
+    if command_exists bun; then
+        bun run start:bun > node.log 2>&1 &
+    elif command_exists npm; then
+        npm run start:npm > node.log 2>&1 &
+    fi
     
     MAX_RETRIES=10
     RETRY_INTERVAL=1
@@ -254,10 +267,10 @@ function restart_server() {
     for ((i=1; i<=MAX_RETRIES; i++)); do
         PIDS=$(lsof -t -i:$PORT)
         if [ -n "$PIDS" ]; then
-            echo -e "${COLOR_GREEN}\nDone. Server up and running on port $PORT!\n${COLOR_RESET}"
+            echo -e "${COLOR_GREEN}\nDone! Server up and running on port $PORT!\n${COLOR_RESET}"
             break
         else
-            echo -e "${COLOR_YELLOW}Waiting for server to start on port $PORT... Attempt $i/${MAX_RETRIES}${COLOR_RESET}"
+            echo -e "${COLOR_YELLOW}[WAITING FOR SERVER]${COLOR_RESET} Attempt $i/${MAX_RETRIES}"
             sleep $RETRY_INTERVAL
         fi
     done
@@ -283,37 +296,52 @@ function start_server() {
         return
     fi
 
-    echo -e "${COLOR_BLUE}Creating public directories...${COLOR_RESET}"
     check_dirs "create"
 
     if [ -f './src/css/main.css' ]; then
         echo -e "${COLOR_BLUE}Deleting old Tailwind CSS...${COLOR_RESET}"
         rm ./src/css/main.css
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     fi
 
     if [ -f './node.log' ]; then
         echo -e "${COLOR_BLUE}Deleting node log...${COLOR_RESET}"
         rm ./node.log
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     fi
 
     echo -e "${COLOR_BLUE}Building project...${COLOR_RESET}"
-    if ! npm run build > node.log 2>&1; then
-        echo -e "${COLOR_RED}Build failed. Please check for errors above.${COLOR_RESET}"
-        exit 1
+    if command_exists bun && command_exists bunx; then
+        if ! bun run build:linux:bun > node.log 2>&1; then
+            echo -e "${COLOR_RED}Build failed. Please check for errors above.${COLOR_RESET}"
+            exit 1
+        else
+            echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
+        fi
+    elif command_exists npm; then
+        if ! npm run build:linux:npm > node.log 2>&1; then
+            echo -e "${COLOR_RED}Build failed. Please check for errors above.${COLOR_RESET}"
+            exit 1
+        else
+            echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
+        fi
     else
-        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
+        echo -e "${COLOR_RED}NodeJS is somehow not installed, exiting.${COLOR_RESET}"
+        exit 1
     fi
 
     if [ -f './public/css/base.css' ]; then
         echo -e "${COLOR_BLUE}Cleaning up base Tailwind CSS file...${COLOR_RESET}"
         rm ./public/css/base.css
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     fi
 
     echo -e "${COLOR_BLUE}Starting server...${COLOR_RESET}"
-    npm start > node.log 2>&1 &
+    if command_exists bun; then
+        bun run start:bun > node.log 2>&1 &
+    elif command_exists npm; then
+        npm run start:npm > node.log 2>&1 &
+    fi
     
     MAX_RETRIES=10
     RETRY_INTERVAL=1
@@ -321,10 +349,10 @@ function start_server() {
     for ((i=1; i<=MAX_RETRIES; i++)); do
         PIDS=$(lsof -t -i:$PORT)
         if [ -n "$PIDS" ]; then
-            echo -e "${COLOR_GREEN}\nDone. Server up and running on port $PORT!\n${COLOR_RESET}"
+            echo -e "${COLOR_GREEN}\nDone! Server up and running on port $PORT!\n${COLOR_RESET}"
             break
         else
-            echo -e "${COLOR_YELLOW}Waiting for server to start on port $PORT... Attempt $i/${MAX_RETRIES}${COLOR_RESET}"
+            echo -e "${COLOR_YELLOW}[WAITING FOR SERVER]${COLOR_RESET} Attempt $i/${MAX_RETRIES}"
             sleep $RETRY_INTERVAL
         fi
     done
@@ -344,20 +372,19 @@ function stop_server() {
     PID=$(lsof -t -i:$PORT)
 
     if [ -d './public' ]; then
-        echo -e "${COLOR_BLUE}Deleting public directories...${COLOR_RESET}"
         check_dirs "delete"
     fi
 
     if [ -f './src/css/main.css' ]; then
         echo -e "${COLOR_BLUE}Deleting Tailwind CSS...${COLOR_RESET}"
         rm ./src/css/main.css
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     fi
 
     if [ -f './node.log' ]; then
         echo -e "${COLOR_BLUE}Deleting node log...${COLOR_RESET}"
         rm ./node.log
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     fi
 
     PIDS=$(lsof -t -i:$PORT)
@@ -365,9 +392,9 @@ function stop_server() {
     if [ -n "$PIDS" ]; then
         echo -e "${COLOR_BLUE}Stopping server...${COLOR_RESET}"
         for PID in $PIDS; do
-            kill "$PID" || echo -e "${COLOR_RED}Failed to kill PID: $PID${COLOR_RESET}"
+            kill "$PID" >> /dev/null || echo -e "${COLOR_RED}Failed to kill PID: $PID${COLOR_RESET}"
         done
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     else
         echo -e "${COLOR_YELLOW}No process found on port $PORT.${COLOR_RESET}"
     fi
@@ -417,17 +444,17 @@ function setup() {
     if command_exists bun; then
         echo -e "\n${COLOR_BLUE}Setting provider to Bun...${COLOR_RESET}"
         echo "DO NOT EDIT THIS: bun" > .njs.provider
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
         echo -e "\n${COLOR_BLUE}Installing dependencies with Bun...${COLOR_RESET}"
         bun install >> install.log
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     elif command_exists npm; then
         echo -e "\n${COLOR_BLUE}Setting provider to Node/NPM...${COLOR_RESET}"
         echo "DO NOT EDIT THIS: node" > .njs.provider
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
         echo -e "\n${COLOR_BLUE}Installing dependencies with NPM...${COLOR_RESET}"
         npm install >> install.log
-        echo -e "${COLOR_GREEN}Done.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}Done!${COLOR_RESET}"
     else
         echo -e "${COLOR_RED}NodeJS is somehow not installed, exiting.${COLOR_RESET}"
         exit 1
