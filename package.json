@@ -20,7 +20,7 @@
     "build:win:npm": "npm run build:css:win:npx && npm run build:js:win && npm run build:img:win && npm run build:pgp:win && npm run copy:favicon:win",
     "build:win:bun": "bun run build:css:win:bunx && bun run build:js:win && bun run build:img:win && bun run build:pgp:win && bun run copy:favicon:win",
     "start:bun": "bun app.js",
-    "start:npm": "npm app.js"
+    "start:npm": "node app.js"
   },
   "private": true,
   "devDependencies": {
