@@ -52,7 +52,7 @@
     "eastasianwidth": "^0.3.0",
     "ejs": "^3.1.10",
     "emoji-regex": "^10.4.0",
-    "express": "^4.21.2",
+    "express": "^5.1.0",
     "fast-glob": "^3.3.3",
     "fastq": "^1.19.1",
     "fill-range": "^7.1.1",
