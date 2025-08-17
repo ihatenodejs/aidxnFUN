@@ -29,7 +29,7 @@
     "tailwindcss": "^4.1.12"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@fortawesome/fontawesome-free": "^7.0.0",
     "@tailwindcss/cli": "^4.1.12",
     "ansi-regex": "^6.1.0",
     "ansi-styles": "^6.2.1",
